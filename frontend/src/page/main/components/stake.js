@@ -15,9 +15,6 @@ text-align: center;
 margin-top: 232px;
 font-family: 'Pretendard';
 font-style: normal;
-background: #FFFFFF;
-box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.25);
-border-radius: 50px;
 width: 80%;
 height: 560px;
 margin:auto ;
@@ -203,17 +200,12 @@ function Stake() {
         <div>
             <StakeWrapper>
                 <StakeForm>
-                    <InputText>Amount to stake: </InputText><br />
+                    <InputText>Validator to stake </InputText><br />
                     <AmountToStake  type="text" value={stakeAmount} onChange={handleStakeAmountChange}></AmountToStake><br />
-                    <InputText>You will get:</InputText><br />
+                    <InputText>Amount to stake</InputText><br />
                     <YouWillGet></YouWillGet>
                 </StakeForm>
                 <TransactionFee>Transaction Fee: 0.001 ETH</TransactionFee>
-                {connected ? (
-                    <Submit onClick={() => {doStake(stakeAmount);}}>execute</Submit>
-                    ) : (
-                    <WalletConnect onClick={() =>{ setConnected( ConnectToMetamask() )}} >Connect Wallet</WalletConnect>
-                )}
             </StakeWrapper>
         </div>
     );

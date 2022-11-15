@@ -8,6 +8,9 @@ import Web3 from 'web3';
 
 
 //--------------------Styles--------------------------//
+const Top = styled.div`
+
+`;
 const HeaderWrapper = styled.div`
 text-align: center;
 margin-top: 232px;
@@ -46,23 +49,24 @@ margin-bottom: 80px;
 `;
 
 const Text1 = styled.div`
-text-align: center;
 font-weight: 900;
 font-size: 30px;
 line-height: 36px;
-
+color: #333333;
 `;
 const Text2 = styled.div`
-color: #ED4E33;
+font-style: normal;
 font-weight: 900;
 font-size: 65px;
 line-height: 55px;
+color: #146DD8;
 `;
 const Text3 = styled.div`
 font-weight: 500;
 font-size: 18px;
 line-height: 21px;
 `;
+
 //--------------------------------------------------------------//
 
 function Header() {
@@ -103,17 +107,26 @@ function Header() {
 
     return (
         <>
-            {connected ? (
-                    <WalletAddress>Address: {account}</WalletAddress>
-                ) : (
-                    <WalletConnect onClick={() =>{ setConnected( ConnectToMetamask() )}} >Connect Wallet</WalletConnect>
-            )}
+            <Top>
+                <div>
+                    INVI
+                </div>
+                <div>
+                    {connected ? (
+                            <WalletAddress>Address: {account}</WalletAddress>
+                        ) : (
+                            <WalletConnect onClick={() =>{ setConnected( ConnectToMetamask() )}} >Connect Wallet</WalletConnect>
+                    )}
+                </div>
+            </Top>
+            
             <HeaderWrapper>
-                <Text1>Stake your ETH and receive reETH</Text1>
-                <Text2>Liquid Staking<br />with Real Estate</Text2>
-                <Text3>Sanji-ro 43, Jeju-si, Jeju-do, Republic of Korea</Text3>
-                <HeaderImg src={headerImg}  /><br />
-                <HeaderImg2 src={headerImg2} />
+                <Text1>InNode</Text1>
+                <Text2>Invincible Node</Text2>
+                <Text3>
+                    Maximize your earning<br />
+                    With following steps : Liquid - Leverage - Risk Hedge 
+                </Text3>
             </HeaderWrapper>
         </>
     )
