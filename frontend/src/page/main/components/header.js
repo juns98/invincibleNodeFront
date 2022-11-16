@@ -14,8 +14,7 @@ const Top = styled.div`
 const HeaderWrapper = styled.div`
 text-align: center;
 margin-top: 232px;
-font-family: 'Pretendard';
-font-style: normal;
+margin-bottom: 100px;
 `;
 const WalletConnect = styled.button`
 position: absolute;

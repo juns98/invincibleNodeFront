@@ -4,69 +4,66 @@ import Web3 from "web3";
 import liquidStaking from '../../../artifacts/contracts/LiquidStaking.sol/LiquidStaking.json';
 import rewardToken from '../../../artifacts/contracts/RewardToken.sol/RewardToken.json';
 import contractAddress from "../../../addresses/contractAddress.json";
+import zeroImg  from '../../../assets/images/zero.png';
+import oneImg from '../../../assets/images/one.png';
+
+import { useDispatch, useSelector } from "react-redux";
+import { selectStakeAmount } from "../../../redux/reducers/stakeAmountReducer";
+import { setAmount } from "../../../redux/reducers/stakeAmountReducer";
+import { BoldText } from "../../../styles/styledComponents/boldText";
+import { NumberImg } from "../../../styles/styledComponents/numberImg";
+import { BasicInput } from "../../../styles/styledComponents/basicInput";
+import { Wrapper } from "../../../styles/styledComponents/wrapper";
+import { Form } from "../../../styles/styledComponents/form";
 
 const liquidStakingContractAddress = contractAddress.liquidStaking;
 console.log("contract Addr: ", liquidStakingContractAddress)
 const rewardTokenContractAddress = contractAddress.rewardToken;
 
 //--------------------------style-----------------------------//
-const StakeWrapper = styled.div`
-text-align: center;
-margin-top: 232px;
-font-family: 'Pretendard';
-font-style: normal;
-width: 80%;
-height: 560px;
-margin:auto ;
+const StakeWrapper = styled(Wrapper)`
+
 `;
-const StakeForm = styled.div` 
-text-align: left;
-width:70%;
-margin: auto ;
-padding-top: 100px;
+const StakeForm = styled(Form)` 
+display: grid;
+grid-template-columns: 1fr 4fr;
+grid-template-rows: 1fr 2fr 1fr 1fr 2fr
 `;
-const InputText = styled.div`
-font-weight: 500;
-font-size: 23px;
-line-height: 27px;
+const SelectTokenText = styled(BoldText)`
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 1;
+    grid-row-end: 1;
 `;
-const AmountToStake = styled.input`
-width: 100%;
-background: #F5F5F5;
-border: 1px solid #BFBFBF;
-border-radius: 5px;
-height: 70px;
-margin-bottom: 30px;
+const StakeAmountText = styled(BoldText)`
+    grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 4;
+    grid-row-end: 4;
 `;
-const YouWillGet = styled.input`
-width: 100%;
-background: #F5F5F5;
-border: 1px solid #BFBFBF;
-border-radius: 5px;
-height: 70px;
-margin-bottom: 30px;
+const TokenToStake = styled(BasicInput)`
+ grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 2;
+    grid-row-end: 3;
 `;
-const TransactionFee = styled.div` 
-font-weight: 500;
-font-size: 15px;
-line-height: 18px;
-color: #828282;
+const AmountToStake = styled(BasicInput)`
+ grid-column-start: 2;
+    grid-column-end: 2;
+    grid-row-start: 5;
+    grid-row-end: 5;
 `;
-const WalletConnect = styled.button`
-width: 50%;
-height: 65px;
-left: 506px;
-top: 1369px;
-background: #ED4E33;
-border-radius: 5px;
+const ZeroImage = styled(NumberImg)` 
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 2;
+    grid-row-end: 2;
 `;
-const Submit = styled.button` 
-width: 50%;
-height: 65px;
-left: 506px;
-top: 1369px;
-background: blue;
-border-radius: 5px;
+const OneImage = styled(NumberImg)` 
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 5;
+    grid-row-end: 5;
 `;
 //--------------------------------------------------------------//
 
@@ -83,21 +80,9 @@ function Stake() {
     const [ stakedAmount, setStakedAmount ] = useState();
     const [ currentRewardRate, setCurrentRewardRate ] = useState(0);
 
-    const ConnectToMetamask = async() => {
-        if (window.ethereum) {
-           await window.ethereum.request({ method: "eth_requestAccounts" });
-           const web3 = new Web3(window.ethereum);
-           const account = web3.eth.accounts;
-           //Get the current MetaMask selected/active wallet
-           const walletAddress = account.givenProvider.selectedAddress;
-           console.log(`Wallet Address: ${walletAddress}`);
-           setAccount(walletAddress);
-           return true;
-        } else {
-            console.log("No wallet");
-            return false;
-        }
-    }
+    const stakeAmountRedux = useSelector(selectStakeAmount);
+    const dispatch = useDispatch();
+    console.log("stake reducer: ", stakeAmountRedux);
 
     function load() {
         web3 = new Web3(window.ethereum);
@@ -116,96 +101,23 @@ function Stake() {
         }
     }
 
-    //---------------contract methods----------------------//
-    const doStake = async(amount) => {
-        console.log("account: ", account); 
-        web3.eth.sendTransaction({
-            from: account,
-            to: liquidStakingContractAddress,
-            value: amount
-        })
-        .then(function(receipt){
-           console.log(receipt);
-        });
-        
-        console.log("stake amount: " + amount);
-        const realAmount = amount;
-        console.log("liquidstakingContract: ", liquidStakingContract.methods);
-        // const dstake = await liquidStakingContract.methods.stake(realAmount).send({from: account});
-        // console.log("stake result: ", dstake);
-    }
-    const receiveReward = async() => {
-        const rreward = await liquidStakingContract.methods.receiveReward().send({from: account});
-        console.log(rreward);
-    }
-    const withdraw = async(amount) => {
-        const wd = await liquidStakingContract.methods.withdraw(amount).send({from: account});
-        console.log(wd);
-    }
-    const rewardRateSetUp = async(rewardRate) => {
-        const rRate = await liquidStakingContract.methods.setRewardRate(rewardRate).send({from: account});
-       // setCurrentRewardRate(rewardRate);
-    }
-
-    //---------------get methods-----------------------//
-     const getRewardRate = async() => {
-        const gRate = await liquidStakingContract.methods.rewardRate().call();
-        setCurrentRewardRate(gRate);
-    }
-    const getStaked = async() => {
-        const gStaked = await liquidStakingContract.methods.balanceOf(account).call();
-        setStakedAmount(gStaked);
-        console.log("staked amount: ", gStaked);
-    }
-    const getTotalSupply = async() => {
-        const tsupply = await liquidStakingContract.methods.totalSupply().call();
-        setTotalSupply(tsupply);
-        console.log("total supply: ", tsupply);
-    }
-    const getContractOwner = async() => {
-        const cOwner = await liquidStakingContract.methods.owner().call();
-        setContractOwner(cOwner);
-    }
-
-    function getValues() {
-        getTotalSupply();
-        getContractOwner();
-        getRewardRate();
-        getStaked();
-    }
-
-
-    useEffect(()=> {
-        load();
-    }, []);
-
-    if (liquidStakingContract == null) {
-        console.log("Liquid staking contract uploading"); 
-        return (
-            <div>
-                {connected ? (
-                    <Submit onClick={() => {doStake(stakeAmount);}}>execute</Submit>
-                    ) : (
-                    <WalletConnect onClick={() =>{ setConnected( ConnectToMetamask() )}} >Connect Wallet</WalletConnect>
-                )}
-            </div>
-        );
-    }
-    getStaked();
     const handleStakeAmountChange = event => {
         setStakeAmount(event.target.value);
+        console.log(dispatch(setAmount(event.target.value)));
+        console.log("hhe")
     }
-    // getValues();
+
     return(
         <div>
             <StakeWrapper>
                 <StakeForm>
-                    <InputText>Validator to stake </InputText><br />
-                    <AmountToStake  type="text" value={stakeAmount} onChange={handleStakeAmountChange}></AmountToStake><br />
-                    <InputText>Amount to stake</InputText><br />
-                    <YouWillGet></YouWillGet>
+                    <SelectTokenText>Select Token to stake </SelectTokenText><br />
+                    <ZeroImage src={zeroImg}></ZeroImage>
+                    <TokenToStake></TokenToStake><br />
+                    <StakeAmountText>Stake Amount</StakeAmountText><br />
+                    <OneImage src={oneImg}></OneImage>
+                    <AmountToStake type="text" value={stakeAmount} onChange={handleStakeAmountChange}></AmountToStake>
                 </StakeForm>
-                <TransactionFee>Transaction Fee: 0.001 ETH</TransactionFee>
             </StakeWrapper>
         </div>
     );
