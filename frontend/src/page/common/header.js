@@ -1,69 +1,44 @@
 import {React, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import headerImg  from '../../../assets/images/headerImg.png';
-import headerImg2 from '../../../assets/images/headerImg2.png';
-
-
+import { useNavigate } from "react-router-dom";
 import Web3 from 'web3';
-
+import { Button } from '../../styles/styledComponents/button';
+import { BoldText } from '../../styles/styledComponents/boldText';
+import { LightText } from '../../styles/styledComponents/lightText';
+import logo from '../../assets/images/logo.png';
 
 //--------------------Styles--------------------------//
 const Top = styled.div`
+display: flex;
+justify-content: space-between;
+`;
+const LeftTop = styled.div` 
 
 `;
-const HeaderWrapper = styled.div`
-text-align: center;
-margin-top: 232px;
-margin-bottom: 100px;
+const RightTop = styled.div` 
+    display: grid;
+    margin-right: 5%;
+    margin-top: 50px;
+    white-space:nowrap;
+    grid-template-columns: 1fr 2fr;
 `;
-const WalletConnect = styled.button`
-position: absolute;
-width: 251px;
-height: 50px;
-right: 112px;
-top: 56px;
-background-color: #ED4E33;
+const WalletConnect = styled(Button)`
+width: 80%;
+grid-column-start: 2;
+grid-column-end: 2;
 `;
 const WalletAddress = styled.div`
-position: absolute;
-width: 251px;
-height: 50px;
-right: 112px;
-top: 56px;
 
 `;
-const HeaderImg = styled.img`
-height: 15%;
-width: 50%;
-left: 418px;
-top: 528px;
-border-radius: 0px;
-margin-top: 90px;
+const Logo = styled.img` 
+    margin-left: 100%;
+    margin-top: 50%;
+    width: 140%;
 `;
-const HeaderImg2 = styled.img`
-width: 32px;
-height: 32px;
-margin-top: 80px;
-margin-bottom: 80px;
-`;
-
-const Text1 = styled.div`
-font-weight: 900;
-font-size: 30px;
-line-height: 36px;
-color: #333333;
-`;
-const Text2 = styled.div`
-font-style: normal;
-font-weight: 900;
-font-size: 65px;
-line-height: 55px;
-color: #146DD8;
-`;
-const Text3 = styled.div`
-font-weight: 500;
-font-size: 18px;
-line-height: 21px;
+const MyAssetButton = styled.button` 
+grid-column-start: 1;
+grid-column-end: 1;
+font-size: 20px;
 `;
 
 //--------------------------------------------------------------//
@@ -71,6 +46,16 @@ line-height: 21px;
 function Header() {
     const [ connected, setConnected ] = useState(false);
     const [ account, setAccount ] = useState();
+
+    let navigate = useNavigate(); 
+    const routeMyAsset = () =>{ 
+      let path = `my-asset`; 
+      navigate(path);
+    }
+    const routeMain = () => {
+        let path = '/';
+        navigate(path);
+    }
 
     const ConnectToMetamask = async() => {
         if (window.ethereum) {
@@ -107,28 +92,19 @@ function Header() {
     return (
         <>
             <Top>
-                <div>
-                    INVI
-                </div>
-                <div>
+                <LeftTop>
+                    <Logo src={logo} onClick={() => {routeMain()}}></Logo>
+                </LeftTop>
+                <RightTop>
+                    <MyAssetButton onClick={() => {routeMyAsset()}}>My Asset</MyAssetButton>
                     {connected ? (
                             <WalletAddress>Address: {account}</WalletAddress>
                         ) : (
                             <WalletConnect onClick={() =>{ setConnected( ConnectToMetamask() )}} >Connect Wallet</WalletConnect>
                     )}
-                </div>
+                </RightTop>
             </Top>
-            
-            <HeaderWrapper>
-                <Text1>InNode</Text1>
-                <Text2>Invincible Node</Text2>
-                <Text3>
-                    Maximize your earning<br />
-                    With following steps : Liquid - Leverage - Risk Hedge 
-                </Text3>
-            </HeaderWrapper>
         </>
     )
 }
-
 export default Header;
