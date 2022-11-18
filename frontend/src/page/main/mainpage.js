@@ -1,4 +1,4 @@
-import Footer from "./components/footer";
+import Footer from "../common/footer"
 import Title from "./components/title";
 import Header from "../common/header";
 import Leverage from "./components/leverage";
@@ -10,7 +10,7 @@ import Start from "./components/start";
 function Mainpage() {
     return (
         <div>
-            <Header></Header>
+            <Header home={0}></Header>
             <Title></Title>
             <Stake></Stake>
             <Leverage></Leverage>

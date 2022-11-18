@@ -1,15 +1,8 @@
 import { React, useState, useEffect } from "react";
 import styled from "styled-components";
-import Web3 from "web3";
-import liquidStaking from '../../../artifacts/contracts/LiquidStaking.sol/LiquidStaking.json';
-import rewardToken from '../../../artifacts/contracts/RewardToken.sol/RewardToken.json';
 import contractAddress from "../../../addresses/contractAddress.json";
 import threeImg  from '../../../assets/images/threeGray.png';
 
-
-import { useDispatch, useSelector } from "react-redux";
-import { selectStakeAmount } from "../../../redux/reducers/stakeAmountReducer";
-import { setAmount } from "../../../redux/reducers/stakeAmountReducer";
 import { NumberImg } from "../../../styles/styledComponents/numberImg";
 import { BoldText } from "../../../styles/styledComponents/boldText";
 import { LightText } from "../../../styles/styledComponents/lightText";
@@ -18,7 +11,6 @@ import { Form } from "../../../styles/styledComponents/form";
 
 const liquidStakingContractAddress = contractAddress.liquidStaking;
 console.log("contract Addr: ", liquidStakingContractAddress)
-const rewardTokenContractAddress = contractAddress.rewardToken;
 
 //--------------------------style-----------------------------//
 const SpecialFeatureWrapper = styled(Wrapper)`
@@ -61,18 +53,7 @@ const ExpectedAprText = styled.div`
 //--------------------------------------------------------------//
 
 const SpecialFeature = () => {    
-    const [ connected, setConnected ] = useState(false);
-    const [ liquidStakingContract, setLiquidStakingContract ] = useState(null);
-    const [ rewardTokenContract, setRewardTokenContract ] = useState(null);
-    const [ account, setAccount ] = useState(null);
-    const [ stakeAmount, setStakeAmount ] = useState(0);
-    const [ totalSupply, setTotalSupply ] = useState(null);
-    const [ contractOwner, setContractOwner ] = useState(null);
-    const [ stakedAmount, setStakedAmount ] = useState();
-    const [ currentRewardRate, setCurrentRewardRate ] = useState(0);
-
-    const stakeAmountRedux = useSelector(selectStakeAmount);
-    const dispatch = useDispatch();
+   
 
     return(
         <div>

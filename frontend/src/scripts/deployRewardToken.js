@@ -18,7 +18,7 @@ async function main() {
     // initial supply 포함
     const reeth = await reETH.deploy(0);
     const result = await reeth.deployed();
-    console.log("sDAI address: ", reeth.address);
+    console.log("Token Contract address: ", reeth.address);
     // console.log("Result: ", result);
 
     const gasPriceData = await ethers.provider.getGasPrice();

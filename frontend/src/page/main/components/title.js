@@ -12,6 +12,21 @@ text-align: center;
 margin-top: 100px;
 margin-bottom: 100px;
 `;
+const InNodeText = styled(BoldText)` 
+
+`;
+const InvincibleNodeText = styled(BoldText)` 
+    color: #146DD8;
+    font-size: 60px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+`;
+const MaximizeEarningText = styled(BoldText)` 
+
+`;
+const StepsText = styled(LightText)` 
+    
+`;
 
 
 //--------------------------------------------------------------//
@@ -21,10 +36,10 @@ function Title() {
     return (
         <> 
             <HeaderWrapper>
-                <BoldText>InNode</BoldText>
-                <BoldText>Invincible Node</BoldText>
-                <BoldText>Maximize your earning</BoldText>
-                <LightText>With following steps : Liquid - Leverage - Risk Hedge </LightText>
+                <InNodeText>inNode</InNodeText>
+                <InvincibleNodeText>Invincible Node</InvincibleNodeText>
+                <MaximizeEarningText>Maximize your earning</MaximizeEarningText>
+                <StepsText>With following steps : Liquid - Leverage - Risk Hedge </StepsText>
             </HeaderWrapper>
         </>
     )

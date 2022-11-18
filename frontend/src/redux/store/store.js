@@ -4,10 +4,12 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 //import thunk from "redux-thunk";
 // import { createStoreHook } from "react-redux";
 import stakeAmountReducer from "../reducers/stakeAmountReducer";
+import connectMetamaskReducer from "../reducers/connectMetamaskReducer";
 
 const rootReducer = combineReducers({
     // list of reducers
-    stakeAmount: stakeAmountReducer
+    stakeAmount: stakeAmountReducer,
+    connectMetamask: connectMetamaskReducer
 });
 
 //const middleware = applyMiddleware(thunk);

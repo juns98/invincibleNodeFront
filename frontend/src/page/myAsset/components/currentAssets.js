@@ -3,6 +3,14 @@ import { BoldText } from "../../../styles/styledComponents/boldText";
 import { BorderWrapper } from "../../../styles/styledComponents/borderWrapper";
 import { LightText } from "../../../styles/styledComponents/lightText";
 import { Wrapper } from "../../../styles/styledComponents/wrapper";
+import { React, useState, useEffect } from "react";
+import Web3 from "web3";
+import contractAddress from "../../../addresses/contractAddress.json"
+import liquidStaking from "../../../artifacts/contracts/LiquidStaking.sol/LiquidStaking.json";
+import rewardToken from "../../../artifacts/contracts/RewardToken.sol/RewardToken.json";
+
+const liquidStakingContractAddress = contractAddress.liquidStaking;
+const rewardTokenAddress = contractAddress.rewardToken;
 
 const AssetWrapper = styled.div` 
 margin-bottom: 80px;
@@ -40,6 +48,68 @@ const ValueTextSmall = styled(BoldText)`
     font-size: 25px;
 `;
 const CurrentAssets = () => {
+    const [ totalStaked, setTotalStaked ] = useState(0);
+    const [ ethBalance, setEthBalance ] = useState(null);
+    const [ liquidStakingContract, setLiquidStakingContract ] = useState();
+    const [ rewardTokenContract, setRewardTokenContract ] = useState();
+    const [ account, setAccount ] = useState();
+
+    const web3 = new Web3(window.ethereum);
+
+
+    function load() {
+        const liquidStakingContract = new web3.eth.Contract(liquidStaking.abi, liquidStakingContractAddress);
+        const rewardTokenContract = new web3.eth.Contract(rewardToken.abi, rewardTokenAddress);
+
+        //콜백 함수
+        if (liquidStakingContract == null || rewardTokenContract == null) {
+            console.log("contract Still null");
+        } 
+        else {
+            setLiquidStakingContract(liquidStakingContract);
+            setRewardTokenContract(rewardTokenContract);
+        }
+    }
+
+    const getEthBalance = async (account) => {
+        try {
+            console.log("Account for balance: ", account);
+            const getEthBalance = await web3.eth.getBalance(account);
+            console.log("ETH Balance: ", getEthBalance);
+            const ethBalanceShort = (getEthBalance/10**18).toString().slice(0,10);
+            setEthBalance(ethBalanceShort);
+        } catch(error) {
+            return error;
+        } 
+    }
+    const getAccount = async() => {
+        try {
+            const getAccount = await web3.eth.getAccounts();
+            setAccount(getAccount[0]);
+            getEthBalance(getAccount[0]);
+            console.log('account :', getAccount[0]);
+        } catch(error) {
+            return error;
+        }
+    }
+
+    const getTotalStaked = async() => {
+        const gStaked = await liquidStakingContract.methods.balanceOf(account).call();
+        const sliceStaked = (gStaked/10**18);
+        setTotalStaked(sliceStaked);
+        console.log("staked amount: ", gStaked);
+    }
+
+    useEffect(()=> {
+        getAccount();
+        load();
+    }, []);
+
+    if (account == null || liquidStakingContract == null ) {
+        return null;
+    }
+
+    getTotalStaked();
 
     return(
         <>
@@ -50,11 +120,11 @@ const CurrentAssets = () => {
                     <AssetElementBox>
                         <AssetElements>
                             <TitleText>Total</TitleText>
-                            <ValueTextBig>$10,111</ValueTextBig>
+                            <ValueTextBig>{ethBalance}ETH</ValueTextBig>
                         </AssetElements>
                         <AssetElements>
                             <TitleText>You Staked</TitleText>
-                            <ValueTextSmall>10 ETH</ValueTextSmall>
+                            <ValueTextSmall>{totalStaked} ETH</ValueTextSmall>
                             <TitleText>You staked -- 10months ago</TitleText>
                         </AssetElements>
                         <AssetElements>

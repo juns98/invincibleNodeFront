@@ -9,4 +9,8 @@ export const Button = styled.button`
     text-align: center;
     width: 380px;
     height: 50px;
+    border: none;
+    border-radius: 5px;
+    font-family: Pretendard-Regular;
+    font-weight: 700;
 `;

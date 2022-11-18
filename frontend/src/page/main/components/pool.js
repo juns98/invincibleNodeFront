@@ -45,8 +45,9 @@ margin-bottom: 100px;
 `;
 const LiquidProvideText = styled.div` 
     color: #146DD8;
-    font-size: 5px;
+    font-size: 10px;
     text-align: center;
+    margin-bottom: 5px;
 `;
 
 const Pool = () => {

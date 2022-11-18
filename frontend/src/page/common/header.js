@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { useNavigate } from "react-router-dom";
 import Web3 from 'web3';
 import { Button } from '../../styles/styledComponents/button';
-import { BoldText } from '../../styles/styledComponents/boldText';
-import { LightText } from '../../styles/styledComponents/lightText';
 import logo from '../../assets/images/logo.png';
-
+import { connect, useDispatch, useSelector } from "react-redux";
+import { selectConnectMetamask } from '../../redux/reducers/connectMetamaskReducer';
+import { setStatus } from '../../redux/reducers/connectMetamaskReducer';
 //--------------------Styles--------------------------//
 const Top = styled.div`
 display: flex;
@@ -28,7 +28,15 @@ grid-column-start: 2;
 grid-column-end: 2;
 `;
 const WalletAddress = styled.div`
-
+    margin-left: 10px;
+    width: 80%;
+    border: 3px solid #146DD8;
+    border-radius: 5px;
+`;
+const WalletAddressText = styled.div` 
+     color: #146DD8;
+     text-align: center;
+     margin-top: 12px;
 `;
 const Logo = styled.img` 
     margin-left: 100%;
@@ -39,13 +47,28 @@ const MyAssetButton = styled.button`
 grid-column-start: 1;
 grid-column-end: 1;
 font-size: 20px;
+width:120px ;
+border-radius: 5px;
+    font-family: Pretendard-Regular;
+    font-weight: 700;
 `;
-
+const HomeButton = styled.button` 
+grid-column-start: 1;
+grid-column-end: 1;
+font-size: 20px;
+width:120px ;
+border-radius: 5px;
+    font-family: Pretendard-Regular;
+    font-weight: 700;
+`;
 //--------------------------------------------------------------//
 
-function Header() {
-    const [ connected, setConnected ] = useState(false);
+function Header({home}) {
     const [ account, setAccount ] = useState();
+    const connectMetamaskRedux = useSelector(selectConnectMetamask);
+    const dispatch = useDispatch();
+    console.log("connect metamask reducer: ", connectMetamaskRedux);
+
 
     let navigate = useNavigate(); 
     const routeMyAsset = () =>{ 
@@ -65,6 +88,8 @@ function Header() {
            //Get the current MetaMask selected/active wallet
            const walletAddress = account.givenProvider.selectedAddress;
            console.log(`Wallet Address: ${walletAddress}`);
+           console.log(dispatch(setStatus(true)));
+           window.localStorage.setItem("connectMetamask", true);
            return true;
         } else {
             console.log("No wallet");
@@ -73,15 +98,17 @@ function Header() {
     }
     
     const getWeb3 = async() => {
-        if (connected) {
+        if (window.localStorage.getItem("connectMetamask")) {
             const web3 = new Web3(window.ethereum);
             try {
                 const getaccount = await web3.eth.getAccounts();
-                setAccount(getaccount[0]);
+                setAccount(getaccount[0].slice(0, 10));
                 console.log('getaccount[0] :', getaccount[0]);
             } catch(error) {
                 return error;
             }
+        } else {
+            console.log("not connected");
         }
     }
     // Use Effect
@@ -89,6 +116,11 @@ function Header() {
         getWeb3();
     }, []);
 
+    if (account == null) {
+        return null;
+    }
+
+  
     return (
         <>
             <Top>
@@ -96,11 +128,19 @@ function Header() {
                     <Logo src={logo} onClick={() => {routeMain()}}></Logo>
                 </LeftTop>
                 <RightTop>
-                    <MyAssetButton onClick={() => {routeMyAsset()}}>My Asset</MyAssetButton>
-                    {connected ? (
-                            <WalletAddress>Address: {account}</WalletAddress>
+                    { home ? (
+                        <HomeButton onClick={() => {routeMain()}}>Main</HomeButton>
+                    )   : (
+                        <MyAssetButton onClick={() => {routeMyAsset()}}>My Asset</MyAssetButton>
+                    )
+
+                    }
+                    { window.localStorage.getItem("connectMetamask") ? (
+                            <WalletAddress>
+                                <WalletAddressText>{account} ...</WalletAddressText>
+                            </WalletAddress>
                         ) : (
-                            <WalletConnect onClick={() =>{ setConnected( ConnectToMetamask() )}} >Connect Wallet</WalletConnect>
+                            <WalletConnect onClick={() =>{ ConnectToMetamask() }} >Connect Wallet</WalletConnect>
                     )}
                 </RightTop>
             </Top>

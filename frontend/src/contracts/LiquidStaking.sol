@@ -49,7 +49,10 @@ contract LiquidStaking is ReentrancyGuard{
     fallback() external payable {
         emit Received(msg.sender);
         balanceOf[msg.sender] += msg.value;
-        
+        totalSupply += msg.value;
+        // reward token을 필요한 만큼 mint
+        reETH.mintToken(address(this), msg.value);
+        reETH.transfer(msg.sender, msg.value);
     }
 
     function exists(address _account) public view returns(bool) {
