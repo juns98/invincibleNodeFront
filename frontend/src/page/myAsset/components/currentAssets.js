@@ -53,6 +53,7 @@ const CurrentAssets = () => {
     const [ liquidStakingContract, setLiquidStakingContract ] = useState();
     const [ rewardTokenContract, setRewardTokenContract ] = useState();
     const [ account, setAccount ] = useState();
+    const [ accumulatedRewards, setAccumulatedRewards ] = useState(0);
 
     const web3 = new Web3(window.ethereum);
 
@@ -106,7 +107,14 @@ const CurrentAssets = () => {
     }, []);
 
     if (account == null || liquidStakingContract == null ) {
-        return null;
+        return (
+            <AssetWrapper>
+                <MyAssetText>My Asset</MyAssetText>
+                <AssetBox>
+                    <h1>Connect Wallet First</h1>
+                </AssetBox>
+            </AssetWrapper>
+        );
     }
 
     getTotalStaked();
@@ -120,7 +128,7 @@ const CurrentAssets = () => {
                     <AssetElementBox>
                         <AssetElements>
                             <TitleText>Total</TitleText>
-                            <ValueTextBig>{ethBalance}ETH</ValueTextBig>
+                            <ValueTextBig>{totalStaked + accumulatedRewards}ETH</ValueTextBig>
                         </AssetElements>
                         <AssetElements>
                             <TitleText>You Staked</TitleText>
@@ -129,7 +137,7 @@ const CurrentAssets = () => {
                         </AssetElements>
                         <AssetElements>
                             <TitleText>Accumulated Rewards</TitleText>
-                            <ValueTextSmall>0.3236 ETH</ValueTextSmall>
+                            <ValueTextSmall>{accumulatedRewards} ETH</ValueTextSmall>
                             <TitleText>APR --------- 7%</TitleText>
                         </AssetElements>
                         <AssetElements>

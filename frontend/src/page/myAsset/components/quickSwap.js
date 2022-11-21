@@ -49,7 +49,7 @@ const QuickSwap = () => {
                     <DownArrow src={downArrow}></DownArrow>
                     <Text>You'll get</Text>
                     <GetInput></GetInput><br />
-                    <QuickSwapImg src={quickSwap}></QuickSwapImg>
+                    {/* <QuickSwapImg src={quickSwap}></QuickSwapImg> */}
                 </SwapWrapper>
             </AllWrapper>
         </>

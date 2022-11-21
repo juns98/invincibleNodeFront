@@ -12,6 +12,8 @@ import { BasicInput } from "../../../styles/styledComponents/basicInput";
 import { Wrapper } from "../../../styles/styledComponents/wrapper";
 import { Form } from "../../../styles/styledComponents/form";
 
+
+import Select from 'react-select';
 import Web3 from "web3";
 
 const StakeForm = styled(Form)` 
@@ -42,11 +44,12 @@ const BalanceText = styled(LightText)`
     font-size: 10px;
     margin-top: 10px;
 `;
-const TokenToStake = styled(BasicInput)`
- grid-column-start: 2;
+const TokenToStake = styled(Select)`
+    grid-column-start: 2;
     grid-column-end: 2;
     grid-row-start: 2;
-    grid-row-end: 3;
+    grid-row-end: 2;
+    margin-bottom: 40px;
 `;
 const AmountToStake = styled(BasicInput)`
  grid-column-start: 2;
@@ -66,7 +69,13 @@ const OneImage = styled(NumberImg)`
     grid-row-start: 5;
     grid-row-end: 5;
 `;
+const options = [
+    { value: 'ethereum', label: 'Ethereum' },
+    { value: 'atom', label: 'Atom' },
+];
+
 const Stake = () => {
+    const [ selectedOption, setSelectedOption] = useState(null);
     const [ stakeAmount, setStakeAmount ] = useState(0);
     const [ ethBalance, setEthBalance ] = useState(null);
 
@@ -102,6 +111,7 @@ const Stake = () => {
 
     useEffect(()=> {
         getAccount();
+        console.log("Token type: ", selectedOption);
     }, []);
 
     if (ethBalance == null ) {
@@ -111,7 +121,11 @@ const Stake = () => {
                     <StakeForm>
                         <SelectTokenText>Select Token to stake </SelectTokenText><br />
                         <ZeroImage src={zeroImg}></ZeroImage>
-                        <TokenToStake></TokenToStake><br />
+                        <TokenToStake   
+                            defaultValue={options[0]}
+                            options={options}
+                            onChange={setSelectedOption}
+                        ></TokenToStake><br />
                         <StakeAmountText>Stake Amount</StakeAmountText><br />
                         <OneImage src={oneImg}></OneImage>
                         <BalanceText>Available: (loading) ETH</BalanceText>
@@ -128,7 +142,11 @@ const Stake = () => {
                 <StakeForm>
                     <SelectTokenText>Select Token to stake </SelectTokenText><br />
                     <ZeroImage src={zeroImg}></ZeroImage>
-                    <TokenToStake></TokenToStake><br />
+                    <TokenToStake 
+                        defaultValue={options[0]}
+                        options={options}
+                        onChange={setSelectedOption}
+                    ></TokenToStake><br />
                     <StakeAmountText>Stake Amount</StakeAmountText><br />
                     <OneImage src={oneImg}></OneImage>
                     <BalanceText>Available: {ethBalance/10**18} ETH</BalanceText>

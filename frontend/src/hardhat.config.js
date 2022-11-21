@@ -1,13 +1,3 @@
-// module.exports = {
-//   solidity: "0.8.17",
-//   networks: {
-//     goerli: {
-//       url: "https://goerli.infura.io/v3/f75ff005d3924f7f9656789a814948c1",
-//       accounts: [goerli_private_key]
-//     }
-//   }
-// };
-
 require("@nomicfoundation/hardhat-toolbox");
 require('dotenv').config();
 const ethers = require('ethers');
@@ -37,6 +27,10 @@ module.exports = {
       gasPrice: parseInt(gasPrice),
       initialBaseFeePerGas: 0,
       loggingEnabled: true
+    },
+    goerli: {
+      url: process.env.GOERLI_RPC_URL,
+      accounts: [process.env.GOERLI_PRIVATE_KEY]
     }
   }
 };

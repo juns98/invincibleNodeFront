@@ -1,4 +1,4 @@
-import MainPage from  "./page/main/mainpage";
+import MainPage from  "./page/main";
 import React from "react";
 import {Route, BrowserRouter, Routes} from 'react-router-dom';
 import MyAsset from "./page/myAsset";
