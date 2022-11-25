@@ -131,13 +131,7 @@ function Header({home}) {
                         )
 
                         }
-                        { window.localStorage.getItem("connectMetamask") ? (
-                                <WalletAddress>
-                                    <WalletAddressText>Please Refresh Page</WalletAddressText>
-                                </WalletAddress>
-                            ) : (
-                                <WalletConnect onClick={() =>{ ConnectToMetamask() }} >Connect Wallet</WalletConnect>
-                        )}
+                            <WalletConnect onClick={() =>{ ConnectToMetamask() }} >Connect Wallet</WalletConnect>
                     </RightTop>
                 </Top>
             </>
