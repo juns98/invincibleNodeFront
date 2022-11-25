@@ -90,6 +90,7 @@ function Header({home}) {
            console.log(`Wallet Address: ${walletAddress}`);
            console.log(dispatch(setStatus(true)));
            window.localStorage.setItem("connectMetamask", true);
+           window.location.reload();
            return true;
         } else {
             console.log("No wallet");
