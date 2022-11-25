@@ -55,7 +55,7 @@ const Start = () => {
     }
      
     const doStake = async(amount) => {
-        let realAmount = web3.utils.toBN(amount).mul(web3.utils.toBN(10 ** 18));
+        let realAmount = amount * (web3.utils.toBN(10 ** 18));
         getAccount();
         console.log("account: ", account); 
         web3.eth.sendTransaction({
