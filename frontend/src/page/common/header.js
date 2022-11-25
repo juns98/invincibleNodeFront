@@ -117,7 +117,31 @@ function Header({home}) {
     }, []);
 
     if (account == null) {
-        return null;
+        return (
+            <>
+                <Top>
+                    <LeftTop>
+                        <Logo src={logo} onClick={() => {routeMain()}}></Logo>
+                    </LeftTop>
+                    <RightTop> 
+                        { home ? (
+                            <HomeButton onClick={() => {routeMain()}}>Main</HomeButton>
+                        )   : (
+                            <MyAssetButton onClick={() => {routeMyAsset()}}>My Asset</MyAssetButton>
+                        )
+
+                        }
+                        { window.localStorage.getItem("connectMetamask") ? (
+                                <WalletAddress>
+                                    <WalletAddressText>Please Refresh Page</WalletAddressText>
+                                </WalletAddress>
+                            ) : (
+                                <WalletConnect onClick={() =>{ ConnectToMetamask() }} >Connect Wallet</WalletConnect>
+                        )}
+                    </RightTop>
+                </Top>
+            </>
+        )
     }
 
   
@@ -127,7 +151,7 @@ function Header({home}) {
                 <LeftTop>
                     <Logo src={logo} onClick={() => {routeMain()}}></Logo>
                 </LeftTop>
-                <RightTop>
+                <RightTop> 
                     { home ? (
                         <HomeButton onClick={() => {routeMain()}}>Main</HomeButton>
                     )   : (
