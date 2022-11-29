@@ -15,66 +15,74 @@ import { Form } from "../../../styles/styledComponents/form";
 
 import Select from 'react-select';
 import Web3 from "web3";
+import { Button } from "../../../styles/styledComponents/button";
 
 const StakeForm = styled(Form)` 
-display: grid;
-grid-template-columns: 1fr 4fr;
-grid-template-rows: 1fr 2fr 1fr 1fr 2fr;
+
 `;
-const StakeWrapper = styled(Wrapper)`
+const StakingWrapper = styled(Wrapper)`
+margin-top: 10vh;
 `;
 const SelectTokenText = styled(BoldText)`
-    grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 1;
-    grid-row-end: 1;
+    font-size: 2vh;
+`;
+const StakeAmountWrapper = styled.div` 
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5%;
 `;
 const StakeAmountText = styled(BoldText)`
-    grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 4;
-    grid-row-end: 4;
+   font-size: 2vh;
 `;
 const BalanceText = styled(LightText)` 
-    grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 4;
-    grid-row-end: 4;
-    text-align: right;
-    font-size: 10px;
-    margin-top: 10px;
+   font-size: 0.5vh;
 `;
 const TokenToStake = styled(Select)`
-    grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 2;
-    grid-row-end: 2;
-    margin-bottom: 40px;
+    
 `;
 const AmountToStake = styled(BasicInput)`
- grid-column-start: 2;
-    grid-column-end: 2;
-    grid-row-start: 5;
-    grid-row-end: 5;
+    width: 100%;
+    margin-top: 5%;
+`;
+const StakeWrapper = styled.div` 
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3%;
+`;
+const YouWillStake = styled(LightText)` 
+
+`;
+const EvmosAmount = styled(LightText)` 
+
+`;
+const GetWrapper = styled.div` 
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5%;
+`;
+const YouWillGet = styled(LightText)` 
+
+`;
+const InEvmosAmount = styled(LightText)` 
+
 `;
 const ZeroImage = styled(NumberImg)` 
-    grid-column-start: 1;
-    grid-column-end: 1;
-    grid-row-start: 2;
-    grid-row-end: 2;
+ 
 `;
 const OneImage = styled(NumberImg)` 
-    grid-column-start: 1;
-    grid-column-end: 1;
-    grid-row-start: 5;
-    grid-row-end: 5;
+    
+`;
+const StakeButton = styled(Button)` 
+    width: 90%;
+    margin: auto;
 `;
 const options = [
     { value: 'ethereum', label: 'Ethereum' },
     { value: 'atom', label: 'Atom' },
 ];
 
-const Stake = () => {
+const Stake = ({openModal}) => {
+    const [ pressStake, setPressStake ] = useState(false);
     const [ selectedOption, setSelectedOption] = useState(null);
     const [ stakeAmount, setStakeAmount ] = useState(0);
     const [ ethBalance, setEthBalance ] = useState(null);
@@ -109,51 +117,71 @@ const Stake = () => {
         }
     }
 
+    const liquidStake = () => {
+        openModal();
+    }
+
     useEffect(()=> {
         getAccount();
         console.log("Token type: ", selectedOption);
     }, []);
 
-    if (ethBalance == null ) {
-        return(
-            <div>
-                <StakeWrapper>
+    const Wrapper = ({value}) => {
+        return (
+            <>
+                {/* <ZeroImage src={zeroImg}></ZeroImage>
+                <OneImage src={oneImg}></OneImage> */}
+                <StakingWrapper>
                     <StakeForm>
                         <SelectTokenText>Select Token to stake </SelectTokenText><br />
-                        <ZeroImage src={zeroImg}></ZeroImage>
-                        <TokenToStake   
+                        {/* <TokenToStake   
                             defaultValue={options[0]}
                             options={options}
                             onChange={setSelectedOption}
-                        ></TokenToStake><br />
-                        <StakeAmountText>Stake Amount</StakeAmountText><br />
-                        <OneImage src={oneImg}></OneImage>
-                        <BalanceText>Available: (loading) ETH</BalanceText>
+                        ></TokenToStake><br /> */}
+                        { !pressStake ? <TokenToStake
+                             defaultValue={options[0]}
+                             options={options}
+                             onChange={setSelectedOption}
+                        ></TokenToStake> : <div></div>}
+                        <StakeAmountWrapper>
+                            <StakeAmountText>Stake Amount</StakeAmountText><br />
+                            <BalanceText>Available: {value} ETH</BalanceText>
+                        </StakeAmountWrapper>
                         <AmountToStake type="text" value={stakeAmount} onChange={handleStakeAmountChange}></AmountToStake>
+                        <StakeWrapper>
+                            <YouWillStake>
+                                You will stake
+                            </YouWillStake>
+                            <EvmosAmount>
+                                Evmos
+                            </EvmosAmount>
+                        </StakeWrapper>
+                        <GetWrapper>
+                            <YouWillGet>
+                                You will get
+                            </YouWillGet>
+                            <InEvmosAmount>
+                                inEvmos
+                            </InEvmosAmount>
+                        </GetWrapper>
+                        <StakeButton onClick={() => {liquidStake(); setPressStake(true)}}>Liquid Stake</StakeButton>
                     </StakeForm>
-                </StakeWrapper>
+                </StakingWrapper>
+            </>
+        )
+    }
+
+    if (ethBalance == null ) {
+        return(
+            <div>
+                <Wrapper value={"loading"}></Wrapper>
             </div>
         )
     }
 
     return(
-        <div>
-            <StakeWrapper>
-                <StakeForm>
-                    <SelectTokenText>Select Token to stake </SelectTokenText><br />
-                    <ZeroImage src={zeroImg}></ZeroImage>
-                    <TokenToStake 
-                        defaultValue={options[0]}
-                        options={options}
-                        onChange={setSelectedOption}
-                    ></TokenToStake><br />
-                    <StakeAmountText>Stake Amount</StakeAmountText><br />
-                    <OneImage src={oneImg}></OneImage>
-                    <BalanceText>Available: {ethBalance/10**18} ETH</BalanceText>
-                    <AmountToStake type="text" value={stakeAmount} onChange={handleStakeAmountChange}></AmountToStake>
-                </StakeForm>
-            </StakeWrapper>
-        </div>
+        <Wrapper value={ethBalance/10**18}></Wrapper>
     );
 }
 

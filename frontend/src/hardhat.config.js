@@ -4,7 +4,8 @@ const ethers = require('ethers');
 const provider = new ethers.providers.getDefaultProvider('http://127.0.0.1:8545/');
 // const wallet = new ethers.Wallet(process.env.WALLET_SECRET).connect(provider);
 const gasPrice = ethers.utils.formatUnits(ethers.utils.parseUnits('1', 'gwei'), 'wei');
-/** @type import('hardhat/config').HardhatUserConfig */
+const evmosGasPrice = ethers.utils.formatUnits(ethers.utils.parseUnits('1', 'gwei'), 'wei');
+/* @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
   solidity: "0.8.17",
   defaultNetwork: 'local',
@@ -31,6 +32,17 @@ module.exports = {
     goerli: {
       url: process.env.GOERLI_RPC_URL,
       accounts: [process.env.GOERLI_PRIVATE_KEY]
+    },
+    testnetEvmos: {
+      chainId: 9000,
+      url: process.env.EVMOS_TESTNET_RPC_URL,
+      accounts: [process.env.EVMOS_PRIVATE_KEY],
+      gas: 5500000
+    },
+    evmos: {
+      chainId: 9001,
+      url: "",
+      accounts: []
     }
   }
 };
