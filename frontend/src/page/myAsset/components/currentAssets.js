@@ -5,12 +5,12 @@ import { LightText } from "../../../styles/styledComponents/lightText";
 import { Wrapper } from "../../../styles/styledComponents/wrapper";
 import { React, useState, useEffect } from "react";
 import Web3 from "web3";
-import contractAddress from "../../../addresses/contractAddress.json"
-import liquidStaking from "../../../artifacts/contracts/LiquidStaking.sol/LiquidStaking.json";
-import rewardToken from "../../../artifacts/contracts/RewardToken.sol/RewardToken.json";
+// import contractAddress from "../../../addresses/contractAddress.json"
+// import liquidStaking from "../../../artifacts/contracts/LiquidStaking.sol/LiquidStaking.json";
+// import rewardToken from "../../../artifacts/contracts/RewardToken.sol/RewardToken.json";
 
-const liquidStakingContractAddress = contractAddress.liquidStaking;
-const rewardTokenAddress = contractAddress.rewardToken;
+// const liquidStakingContractAddress = contractAddress.liquidStaking;
+// const rewardTokenAddress = contractAddress.rewardToken;
 
 const AssetWrapper = styled.div` 
 margin-bottom: 80px;
@@ -58,19 +58,19 @@ const CurrentAssets = () => {
     const web3 = new Web3(window.ethereum);
 
 
-    function load() {
-        const liquidStakingContract = new web3.eth.Contract(liquidStaking.abi, liquidStakingContractAddress);
-        const rewardTokenContract = new web3.eth.Contract(rewardToken.abi, rewardTokenAddress);
+    // function load() {
+    //     const liquidStakingContract = new web3.eth.Contract(liquidStaking.abi, liquidStakingContractAddress);
+    //     const rewardTokenContract = new web3.eth.Contract(rewardToken.abi, rewardTokenAddress);
 
-        //콜백 함수
-        if (liquidStakingContract == null || rewardTokenContract == null) {
-            console.log("contract Still null");
-        } 
-        else {
-            setLiquidStakingContract(liquidStakingContract);
-            setRewardTokenContract(rewardTokenContract);
-        }
-    }
+    //     //콜백 함수
+    //     if (liquidStakingContract == null || rewardTokenContract == null) {
+    //         console.log("contract Still null");
+    //     } 
+    //     else {
+    //         setLiquidStakingContract(liquidStakingContract);
+    //         setRewardTokenContract(rewardTokenContract);
+    //     }
+    // }
 
     const getEthBalance = async (account) => {
         try {
@@ -101,10 +101,10 @@ const CurrentAssets = () => {
         console.log("staked amount: ", gStaked);
     }
 
-    useEffect(()=> {
-        getAccount();
-        load();
-    }, []);
+    // useEffect(()=> {
+    //     getAccount();
+    //     load();
+    // }, []);
 
     if (account == null || liquidStakingContract == null ) {
         return (

@@ -10,6 +10,6 @@ export const Button = styled.button`
     height: 50px;
     border: none;
     border-radius: 5px;
-    font-family: Pretendard-Regular;
+    font-family: pretendard;
     font-weight: 700;
 `;
