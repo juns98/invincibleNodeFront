@@ -3,36 +3,40 @@ import { BoldText } from "../../../styles/styledComponents/boldText";
 import { Button } from "../../../styles/styledComponents/button";
 import StakeInput from "../utils/stakeInput";
 
-
-const SuccessWrapper = styled.div` 
-
+const SuccessWrapper = styled.div``;
+const FirstText = styled(BoldText)`
+  font-size: 30px;
+  font-weight: 900;
+  text-align: left;
+  margin-bottom: 3px;
 `;
-const FirstText = styled(BoldText)` 
-
+const SecondText = styled(BoldText)`
+  font-size: 20px;
+  font-weight: 700;
+  text-align: left;
 `;
-const SecondText = styled(BoldText)` 
-
-`;
-const CurrentStatus = styled.div` 
-
-`;
-const ConfirmButton = styled(Button)` 
-
+const CurrentStatus = styled.div``;
+const ConfirmButton = styled(Button)`
+  width: 100%;
+  font-size: 15px;
+  font-weight: 700;
 `;
 
-const Success = () => {
-
-
-    return (
-        <SuccessWrapper>
-            <FirstText>Transfer Success</FirstText>
-            <SecondText>Current status</SecondText>
-            <CurrentStatus></CurrentStatus>
-            <StakeInput></StakeInput>
-            <ConfirmButton>OK</ConfirmButton>
-        </SuccessWrapper>
-    )
-
-}
+const Success = ({ token, stakeAmount, getAmount }) => {
+  return (
+    <SuccessWrapper>
+      <FirstText>Successful Transfer</FirstText>
+      <SecondText>Current status</SecondText>
+      <CurrentStatus></CurrentStatus>
+      <StakeInput
+        status={"success"}
+        token={token}
+        stakeAmount={stakeAmount}
+        getAmount={getAmount}
+      />
+      <ConfirmButton>OK</ConfirmButton>
+    </SuccessWrapper>
+  );
+};
 
 export default Success;

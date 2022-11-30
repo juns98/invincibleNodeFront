@@ -1,169 +1,229 @@
-import {React, useState, useEffect } from 'react';
-import styled from 'styled-components';
+import { React, useState, useEffect } from "react";
+import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import Web3 from 'web3';
-import { Button } from '../../styles/styledComponents/button';
-import logo from '../../assets/images/logo.png';
+import Web3 from "web3";
+import { Button } from "../../styles/styledComponents/button";
+import logo from "../../assets/images/Logo.svg";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { selectConnectMetamask } from '../../redux/reducers/connectMetamaskReducer';
-import { setStatus } from '../../redux/reducers/connectMetamaskReducer';
+import { selectConnectMetamask } from "../../redux/reducers/connectMetamaskReducer";
+import { setStatus } from "../../redux/reducers/connectMetamaskReducer";
 //--------------------Styles--------------------------//
 const Top = styled.div`
-display: flex;
-justify-content: space-between;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-left: 5vw;
+  padding-right: 5vw;
 `;
-const LeftTop = styled.div` 
-
-`;
-const RightTop = styled.div` 
-    display: grid;
-    margin-right: 5%;
-    margin-top: 50px;
-    white-space:nowrap;
-    grid-template-columns: 1fr 2fr;
+const LeftTop = styled.div``;
+const RightTop = styled.div`
+  //   display: grid;
+  //   margin-right: 5%;
+  display: flex;
+  margin-top: 50px;
+  white-space: nowrap;
+  //   grid-template-columns: 1fr 2fr;
 `;
 const WalletConnect = styled(Button)`
-width: 80%;
-grid-column-start: 2;
-grid-column-end: 2;
+  //   width: 80%;
+  //   grid-column-start: 2;
+  //   grid-column-end: 2;
+  width: auto;
+  padding-left: 3vw;
+  padding-right: 3vw;
 `;
 const WalletAddress = styled.div`
-    margin-left: 10px;
-    width: 80%;
-    border: 3px solid #146DD8;
-    border-radius: 5px;
+  display: flex;
+  background-color: #f1f1f1;
+  margin-left: 10px;
+  border: 1px solid #146dd8;
+  border-radius: 10px;
+  padding-left: 3vw;
+  padding-right: 3vw;
+  align-items: center;
+  height: 55px;
 `;
-const WalletAddressText = styled.div` 
-     color: #146DD8;
-     text-align: center;
-     margin-top: 12px;
+const WalletAddressText = styled.div`
+  color: #146dd8;
+  text-align: center;
+  font-family: Pretendard;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 18px;
+  letter-spacing: 0em;
+  text-align: center;
 `;
-const Logo = styled.img` 
-    margin-left: 100%;
-    margin-top: 50%;
-    width: 140%;
+const Logo = styled.img`
+  margin-top: 50%;
+  width: 97px;
 `;
-const MyAssetButton = styled.button` 
-grid-column-start: 1;
-grid-column-end: 1;
-font-size: 20px;
-width:120px ;
-border-radius: 5px;
-    font-family: Pretendard-Regular;
-    font-weight: 700;
+const MyAssetButton = styled.button`
+  //   grid-column-start: 1;
+  //   grid-column-end: 1;
+  font-size: 15px;
+  height: 55px;
+  //   width: 120px;
+  padding-left: 3vw;
+  padding-right: 3vw;
+  border-radius: 5px;
+  font-family: Pretendard;
+  font-weight: 700;
+  border: hidden;
+  background-color: transparent;
+  color: #ffffff;
 `;
-const HomeButton = styled.button` 
-grid-column-start: 1;
-grid-column-end: 1;
-font-size: 20px;
-width:120px ;
-border-radius: 5px;
-    font-family: Pretendard-Regular;
-    font-weight: 700;
+const HomeButton = styled.button`
+  grid-column-start: 1;
+  grid-column-end: 1;
+  font-size: 20px;
+  width: 120px;
+  border-radius: 5px;
+  font-family: pretendard;
+  font-weight: 700;
 `;
 //--------------------------------------------------------------//
 
-function Header({home}) {
-    const [ account, setAccount ] = useState();
-    const connectMetamaskRedux = useSelector(selectConnectMetamask);
-    const dispatch = useDispatch();
-    console.log("connect metamask reducer: ", connectMetamaskRedux);
+function Header({ home }) {
+  const [account, setAccount] = useState();
+  const connectMetamaskRedux = useSelector(selectConnectMetamask);
+  const dispatch = useDispatch();
+  console.log("connect metamask reducer: ", connectMetamaskRedux);
 
+  let navigate = useNavigate();
+  const routeMyAsset = () => {
+    let path = `/my-asset`;
+    navigate(path);
+  };
+  const routeMain = () => {
+    let path = "/";
+    navigate(path);
+  };
 
-    let navigate = useNavigate(); 
-    const routeMyAsset = () =>{ 
-      let path = `my-asset`; 
-      navigate(path);
+  const ConnectToMetamask = async () => {
+    if (window.ethereum) {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const web3 = new Web3(window.ethereum);
+      const account = web3.eth.accounts;
+      //Get the current MetaMask selected/active wallet
+      const walletAddress = account.givenProvider.selectedAddress;
+      console.log(`Wallet Address: ${walletAddress}`);
+      console.log(dispatch(setStatus(true)));
+      window.localStorage.setItem("connectMetamask", true);
+      window.location.reload();
+      return true;
+    } else {
+      console.log("No wallet");
+      return false;
     }
-    const routeMain = () => {
-        let path = '/';
-        navigate(path);
-    }
+  };
 
-    const ConnectToMetamask = async() => {
-        if (window.ethereum) {
-           await window.ethereum.request({ method: "eth_requestAccounts" });
-           const web3 = new Web3(window.ethereum);
-           const account = web3.eth.accounts;
-           //Get the current MetaMask selected/active wallet
-           const walletAddress = account.givenProvider.selectedAddress;
-           console.log(`Wallet Address: ${walletAddress}`);
-           console.log(dispatch(setStatus(true)));
-           window.localStorage.setItem("connectMetamask", true);
-           window.location.reload();
-           return true;
-        } else {
-            console.log("No wallet");
-            return false;
-        }
+  const getWeb3 = async () => {
+    if (window.localStorage.getItem("connectMetamask")) {
+      const web3 = new Web3(window.ethereum);
+      try {
+        const getaccount = await web3.eth.getAccounts();
+        setAccount(getaccount[0].slice(0, 10));
+        console.log("getaccount[0] :", getaccount[0]);
+      } catch (error) {
+        return error;
+      }
+    } else {
+      console.log("not connected");
     }
-    
-    const getWeb3 = async() => {
-        if (window.localStorage.getItem("connectMetamask")) {
-            const web3 = new Web3(window.ethereum);
-            try {
-                const getaccount = await web3.eth.getAccounts();
-                setAccount(getaccount[0].slice(0, 10));
-                console.log('getaccount[0] :', getaccount[0]);
-            } catch(error) {
-                return error;
-            }
-        } else {
-            console.log("not connected");
-        }
-    }
-    // Use Effect
-    useEffect(() => {
-        getWeb3();
-    }, []);
+  };
+  // Use Effect
+  useEffect(() => {
+    getWeb3();
+  }, []);
 
-    if (account == null) {
-        return (
-            <>
-                <Top>
-                    <LeftTop>
-                        <Logo src={logo} onClick={() => {routeMain()}}></Logo>
-                    </LeftTop>
-                    <RightTop> 
-                        { home ? (
-                            <HomeButton onClick={() => {routeMain()}}>Main</HomeButton>
-                        )   : (
-                            <MyAssetButton onClick={() => {routeMyAsset()}}>My Asset</MyAssetButton>
-                        )
-
-                        }
-                            <WalletConnect onClick={() =>{ ConnectToMetamask() }} >Connect Wallet</WalletConnect>
-                    </RightTop>
-                </Top>
-            </>
-        )
-    }
-
-  
+  if (account == null) {
     return (
-        <>
-            <Top>
-                <LeftTop>
-                    <Logo src={logo} onClick={() => {routeMain()}}></Logo>
-                </LeftTop>
-                <RightTop> 
-                    { home ? (
-                        <HomeButton onClick={() => {routeMain()}}>Main</HomeButton>
-                    )   : (
-                        <MyAssetButton onClick={() => {routeMyAsset()}}>My Asset</MyAssetButton>
-                    )
+      <>
+        <Top>
+          <LeftTop>
+            <Logo
+              src={logo}
+              onClick={() => {
+                routeMain();
+              }}
+            />
+          </LeftTop>
+          <RightTop>
+            {home ? (
+              <HomeButton
+                onClick={() => {
+                  routeMain();
+                }}
+              >
+                Main
+              </HomeButton>
+            ) : (
+              <MyAssetButton
+                onClick={() => {
+                  routeMyAsset();
+                }}
+              >
+                My Asset
+              </MyAssetButton>
+            )}
+            <WalletConnect
+              onClick={() => {
+                ConnectToMetamask();
+              }}
+            >
+              Connect Wallet
+            </WalletConnect>
+          </RightTop>
+        </Top>
+      </>
+    );
+  }
 
-                    }
-                    { window.localStorage.getItem("connectMetamask") ? (
-                            <WalletAddress>
-                                <WalletAddressText>{account} ...</WalletAddressText>
-                            </WalletAddress>
-                        ) : (
-                            <WalletConnect onClick={() =>{ ConnectToMetamask() }} >Connect Wallet</WalletConnect>
-                    )}
-                </RightTop>
-            </Top>
-        </>
-    )
+  return (
+    <>
+      <Top>
+        <LeftTop>
+          <Logo
+            src={logo}
+            onClick={() => {
+              routeMain();
+            }}
+          ></Logo>
+        </LeftTop>
+        <RightTop>
+          {home ? (
+            <HomeButton
+              onClick={() => {
+                routeMain();
+              }}
+            >
+              Main
+            </HomeButton>
+          ) : (
+            <MyAssetButton
+              onClick={() => {
+                routeMyAsset();
+              }}
+            >
+              My Asset
+            </MyAssetButton>
+          )}
+          {window.localStorage.getItem("connectMetamask") ? (
+            <WalletAddress>
+              <WalletAddressText>{account} ...</WalletAddressText>
+            </WalletAddress>
+          ) : (
+            <WalletConnect
+              onClick={() => {
+                ConnectToMetamask();
+              }}
+            >
+              Connect Wallet
+            </WalletConnect>
+          )}
+        </RightTop>
+      </Top>
+    </>
+  );
 }
 export default Header;
