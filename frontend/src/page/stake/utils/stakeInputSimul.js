@@ -59,24 +59,28 @@ const GetWrapper = styled.div`
   // max-width: 400px;
   align-items: center;
 `;
-const StakeInputSimul = ({ token, stakeAmount, getAmount }) => {
+const StakeInputSimul = ({ token, stakeAmount, getAmount, availableRatio }) => {
   return (
     <>
       <ResultContainer>
         <StakeWrapper>
-          <YouWillStake>You will get</YouWillStake>
+          <YouWillStake>You will get without risk hedge</YouWillStake>
           <EvmosInputWrapper>
             <EvmosInput value={getAmount} />
             <InEvmosAmount>in {token}</InEvmosAmount>
           </EvmosInputWrapper>
         </StakeWrapper>
-        <GetWrapper>
-          <YouWillStake>If with special features</YouWillStake>
+        <StakeWrapper>
+          <YouWillStake>If with risk hedge</YouWillStake>
           <EvmosInputWrapper>
             <EvmosInput value={getAmount} />
             <InEvmosAmount>in {token}</InEvmosAmount>
           </EvmosInputWrapper>
-        </GetWrapper>
+        </StakeWrapper>
+        <StakeWrapper style={{ marginTop: "10px" }}>
+          <YouWillStake>Available Ratio to Rish Hedge</YouWillStake>
+          <InEvmosAmount>{availableRatio}%</InEvmosAmount>
+        </StakeWrapper>
       </ResultContainer>
     </>
   );
