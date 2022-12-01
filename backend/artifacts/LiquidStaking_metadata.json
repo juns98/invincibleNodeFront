@@ -36,19 +36,6 @@
 						"type": "address"
 					}
 				],
-				"name": "Exist",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": false,
-						"internalType": "address",
-						"name": "sender",
-						"type": "address"
-					}
-				],
 				"name": "Received",
 				"type": "event"
 			},
@@ -80,6 +67,19 @@
 			{
 				"stateMutability": "payable",
 				"type": "fallback"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_account",
+						"type": "address"
+					}
+				],
+				"name": "addAddressList",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 			},
 			{
 				"inputs": [
@@ -350,11 +350,11 @@
 			]
 		},
 		"contracts/liquidStaking.sol": {
-			"keccak256": "0x43631a64641c875e7c2561a4be2c449560fd61072e2cf5503c8bb59185b6e4b4",
+			"keccak256": "0xb069a40f33bd2accf8cba005890ef37fe58c0d0d22f88d329945351d62d28dda",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://263514b71461bf1700ccf48f3eb22ee045538225896fc3f88a981187a2b2fdb3",
-				"dweb:/ipfs/QmexfkXCibEXEssHfagQDuMcgMqS9KYX2KkDDyDJ8x8FVT"
+				"bzz-raw://b4bba724e1428cca7abf5a73498183cceab8b9f6f278ed49a46d0ca1fba460de",
+				"dweb:/ipfs/QmXRrejxxWhqJXuncTUK6MwR8j9928FE9n2S87qzZab2pm"
 			]
 		}
 	},
