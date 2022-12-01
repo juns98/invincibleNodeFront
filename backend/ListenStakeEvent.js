@@ -38,7 +38,7 @@ contractRead.on("Transfer", (src, dst, val, event) => {
     console.log("Receiver: ", info.to),
     console.log("Value: ", info.value);
 
-    exec("bash ListenContractEvent.sh " + pw + " " + info.value, (error, stdout, stderr) => {
+    exec("bash ListenStakeEvent.sh " + pw + " " + info.value, (error, stdout, stderr) => {
         if (error) {
             console.log(`error: ${error.message}`);
             return;
