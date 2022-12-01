@@ -35,6 +35,11 @@ contract LiquidStaking is ReentrancyGuard{
 
     event Received(address sender);
     event Transfer(address indexed src, address indexed dst, uint val);
+    event Unbond(address indexed src, uint val);
+
+    // validatorOwner = 0x3abc249dd82Df7eD790509Fba0cC22498C92cCFc
+    // rewardToken = 0x89a7D248d7520387963F5d164De9D8a3A77A4200
+    // liquidStaking = 0xAd6c553BCe3079b4Dc52689fbfD4a2e72F1F3158
 
     // 생성자로 staking token address / reward token address을 입력 
     constructor(address _reToken, address _validatorOwner, uint _unbondingTime) {
@@ -47,32 +52,23 @@ contract LiquidStaking is ReentrancyGuard{
 
     fallback() external payable {
         emit Received(msg.sender);
-        emit Transfer(msg.sender, address(this), msg.value);
+        // emit Transfer(msg.sender, address(this), msg.value);
         // validator owner send
-        // if (msg.sender == validatorOwner) {
-        //     (bool sent, ) = validatorOwner.call{value: msg.value}("");
-        //     require(sent, "Failed to send EVMOS");
-        // }
-        // // normal user send
-        // else {
-        //     emit Transfer(msg.sender, address(this), msg.value);
-        //     addAddressList(msg.sender);
-        //     balanceOf[msg.sender] += msg.value;
-        //     userMaximumWithdrawAmount[msg.sender] += msg.value;
-        //     totalSupply += msg.value;
-        //     // reward token mint
-        //     reToken.mintToken(address(this), msg.value);
-        //     reToken.transfer(msg.sender, msg.value);
-        // }
-    }
-
-    function exists(address _account) public view returns(bool) {
-        for (uint i = 0; i< addressList.length; i++) {
-            if (addressList[i] == _account) {
-                return true;
-            }
+        if (msg.sender == validatorOwner) {
+            // (bool sent, ) = validatorOwner.call{value: msg.value}("");
+            // require(sent, "Failed to send EVMOS");
         }
-        return false;
+        // normal user send
+        else {
+            emit Transfer(msg.sender, address(this), msg.value);
+            addAddressList(msg.sender);
+            balanceOf[msg.sender] += msg.value;
+            userMaximumWithdrawAmount[msg.sender] += msg.value;
+            totalSupply += msg.value;
+            // reward token mint
+            reToken.mintToken(address(this), msg.value);
+            reToken.transfer(msg.sender, msg.value);
+        }
     }
 
     modifier onlyOwner() {
@@ -93,9 +89,18 @@ contract LiquidStaking is ReentrancyGuard{
         }
     }
 
-    function addAddressList(address _account) private {
+    function exists(address _account) public returns(bool) {
+        for (uint i = 0; i< addressList.length; i++) {
+            if (addressList[i] == _account) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function addAddressList(address _account) public {
         if (!exists(_account)) {
-            addressList[addressList.length] = _account;
+            addressList.push(_account);
             totalAddressNumber++;
         }
     }
