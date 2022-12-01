@@ -67,6 +67,31 @@ const SwitchContainer = styled.div`
   position: relative;
   margin-bottom: 14px;
 `;
+
+const LeverageVolumeControl = styled.input`
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  display: flex;
+  justify-content: space-between;
+  //   padding-left: 20px;
+  //   padding-right: 20px;
+  border: hidden;
+  // background-color: #1f53ff;
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 15px;
+    // box-shadow: 0px 0px 0px 5px #146dd8 inset;
+    background-color: #1f53ff;
+    // background: ${(props) => (props.volume ? "#d9d9d9" : "#E5E7EB")};
+    // margin-top: -5px;
+    cursor: pointer;
+  }
+`;
+
 const SwitchLeftButton = styled.button`
   width: 50%;
   height: 100%;
@@ -117,13 +142,38 @@ const CenterCircle = styled.div`
   transform: translate(-50%, 0%);
 `;
 
+const LeverageTextBox = styled.div`
+  display: flex;
+  align-items: bottom;
+  text-align: left;
+`;
+
+const LeverageValue = styled.div`
+  font-family: Pretendard;
+  font-size: 14px;
+  font-weight: 900;
+  margin-right: 3px;
+`;
+
+const LeverageText = styled.div`
+  font-family: Pretendard;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+`;
+
 const Leverage = ({ pressStake, token, stakeAmount, getAmount }) => {
   const [leveraged, setLeveraged] = useState(true);
+  const [leverage, setLeverage] = useState(2);
   const stake = () => {
     pressStake();
   };
   const switchOnClick = () => {
     setLeveraged(!leveraged);
+  };
+
+  const leverageOnChange = (e) => {
+    setLeveraged(e.target.valueAsNumber);
   };
   return (
     <LeverageWrapper>
@@ -141,8 +191,23 @@ const Leverage = ({ pressStake, token, stakeAmount, getAmount }) => {
       </CurrentStatusWrapper>
       <FourthText>Simulate your maximized profits</FourthText>
       <SimulateBox>
+        <LeverageTextBox>
+          <LeverageValue>If you {leverage}X</LeverageValue>
+          <LeverageText>Leverage</LeverageText>
+        </LeverageTextBox>
         <SwitchContainer>
-          <SwitchLeftButton
+          <LeverageVolumeControl
+            type="range"
+            min={1}
+            max={4}
+            step={0.02}
+            value={leverage}
+            onChange={(event) => {
+              setLeverage(event.target.valueAsNumber);
+            }}
+            // onChange={(e)=>leverageOnChange(e)}
+          />
+          {/* <SwitchLeftButton
             style={leveraged ? {} : { backgroundColor: "#333333" }}
             onClick={switchOnClick}
           >
@@ -155,12 +220,13 @@ const Leverage = ({ pressStake, token, stakeAmount, getAmount }) => {
             onClick={switchOnClick}
           >
             <SwitchLeftDiv2>Risk hedge</SwitchLeftDiv2>
-          </SwitchRightButton>
+          </SwitchRightButton> */}
         </SwitchContainer>
         <StakeInputSimul
           token={token}
           stakeAmount={stakeAmount}
           getAmount={getAmount}
+          availableRatio={Number((1 / leverage) * 100).toFixed(0)}
         />
       </SimulateBox>
       <ButtonWrapper>
