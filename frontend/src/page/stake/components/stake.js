@@ -246,6 +246,9 @@ const colourStyles = {
   },
 };
 
+const web3 = new Web3(window.ethereum);
+
+
 const Stake = ({
   openModal,
   setToken,
@@ -262,6 +265,8 @@ const Stake = ({
 
   const stakeAmountRedux = useSelector(selectStakeAmount);
   const dispatch = useDispatch();
+
+
 
   useEffect(() => {
     setStakeAmountGlobal(stakeAmount);

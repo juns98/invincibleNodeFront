@@ -83,15 +83,16 @@ const HomeButton = styled.button`
 `;
 //--------------------------------------------------------------//
 
+const web3 = new Web3(window.ethereum);
+
 function Header({ home }) {
   const [account, setAccount] = useState();
-  const connectMetamaskRedux = useSelector(selectConnectMetamask);
   const dispatch = useDispatch();
-  console.log("connect metamask reducer: ", connectMetamaskRedux);
+
 
   let navigate = useNavigate();
-  const routeMyAsset = () => {
-    let path = `/my-asset`;
+  const routeUnstake = () => {
+    let path = `/unstake`;
     navigate(path);
   };
   const routeMain = () => {
@@ -99,17 +100,71 @@ function Header({ home }) {
     navigate(path);
   };
 
+  const AddNetwork = async() => {
+    await window.ethereum.request({
+      method: 'wallet_addEthereumChain',
+      params: [{ 
+          chainId: web3.utils.toHex('9000'),
+          chainName: 'Evmos',
+          nativeCurrency: {
+              name: 'tEVMOS',
+              symbol: 'tEVMOS',
+              decimals: 18
+          },
+          rpcUrls: ['https://eth.bd.evmos.dev:8545'],
+          blockExplorerUrls: ['https://evm.evmos.dev']
+      }],
+  })
+  .then(() => console.log('network added'))
+  .catch(() => console.log('could not add network'))
+  }
+
+  const SwitchNetwork = async () => {
+    await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: web3.utils.toHex('9000') }],
+    })
+    .then(() => console.log('network has been set'))
+    .catch((e) => {
+        if (e.code === 4902) {
+          console.log('network is not available, add it');
+          AddNetwork();
+
+        } else {
+          console.log('could not set network')
+        }
+    })
+  }
+
   const ConnectToMetamask = async () => {
     if (window.ethereum) {
       await window.ethereum.request({ method: "eth_requestAccounts" });
-      const web3 = new Web3(window.ethereum);
+      const yourNetworkId = '9000'
+      const netId = await web3.eth.net.getId()
+      .then((networkId) => {
+        if (networkId != yourNetworkId) {
+          // MetaMask network is wrong
+          console.log('current net id: ', networkId);
+          // set network
+          SwitchNetwork();
+        }
+        else {
+          console.log("proper network. id: ", networkId);
+          
+        }
+      })
+      .catch((err) => {
+        // unable to retrieve network id
+        console.log(err);
+      });
+
       const account = web3.eth.accounts;
       //Get the current MetaMask selected/active wallet
       const walletAddress = account.givenProvider.selectedAddress;
       console.log(`Wallet Address: ${walletAddress}`);
       console.log(dispatch(setStatus(true)));
       window.localStorage.setItem("connectMetamask", true);
-      window.location.reload();
+      // window.location.reload();
       return true;
     } else {
       console.log("No wallet");
@@ -134,6 +189,7 @@ function Header({ home }) {
   // Use Effect
   useEffect(() => {
     getWeb3();
+    // window.localStorage.removeItem("connectMetamask");
   }, []);
 
   if (account == null) {
@@ -160,7 +216,7 @@ function Header({ home }) {
             ) : (
               <MyAssetButton
                 onClick={() => {
-                  routeMyAsset();
+                  routeUnstake();
                 }}
               >
                 My Asset
@@ -202,10 +258,10 @@ function Header({ home }) {
           ) : (
             <MyAssetButton
               onClick={() => {
-                routeMyAsset();
+                routeUnstake();
               }}
             >
-              My Asset
+              Unstake
             </MyAssetButton>
           )}
           {window.localStorage.getItem("connectMetamask") ? (

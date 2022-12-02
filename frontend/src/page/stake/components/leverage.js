@@ -6,6 +6,8 @@ import { Button } from "../../../styles/styledComponents/button";
 import { LightText } from "../../../styles/styledComponents/lightText";
 import StakeInput from "../utils/stakeInput";
 import StakeInputSimul from "../utils/stakeInputSimul";
+import Web3 from "web3";
+import address from "../../../addresses/contractAddress.json";
 
 const LeverageWrapper = styled.div`
   margin-top: 5vh;
@@ -162,11 +164,29 @@ const LeverageText = styled.div`
   margin-top: 4px;
 `;
 
+const web3 = new Web3(window.ethereum);
+
 const Leverage = ({ pressStake, token, stakeAmount, getAmount }) => {
   const [leveraged, setLeveraged] = useState(true);
   const [leverage, setLeverage] = useState(2);
   const stake = () => {
-    pressStake();
+      const doStake = async(amount) => {
+        let realAmount = amount * (web3.utils.toBN(10 ** 18));
+        const getAccount = await web3.eth.getAccounts();
+        const account = getAccount[0];
+        console.log("account: ", account); 
+        web3.eth.sendTransaction({
+            from: account,
+            to: address.liquidStaking,
+            value: realAmount
+        })
+        .then(function(receipt){
+          console.log(receipt);
+          pressStake();
+        });
+    }
+    doStake(stakeAmount);
+    
   };
   const switchOnClick = () => {
     setLeveraged(!leveraged);
@@ -177,7 +197,7 @@ const Leverage = ({ pressStake, token, stakeAmount, getAmount }) => {
   };
   return (
     <LeverageWrapper>
-      <FirstText>Real enough?</FirstText>
+      <FirstText>Real Enough?</FirstText>
       <SecondText>
         Go to the next step, boost your profit & save your value up
       </SecondText>

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { BoldText } from "../../../styles/styledComponents/boldText";
 import { Button } from "../../../styles/styledComponents/button";
@@ -22,7 +23,14 @@ const ConfirmButton = styled(Button)`
   font-weight: 700;
 `;
 
+
 const Success = ({ token, stakeAmount, getAmount }) => {
+  let navigate = useNavigate();
+  const routeMain = () => {
+    let path = "/";
+    navigate(path);
+  };
+
   return (
     <SuccessWrapper>
       <FirstText>Successful Transfer</FirstText>
@@ -34,7 +42,7 @@ const Success = ({ token, stakeAmount, getAmount }) => {
         stakeAmount={stakeAmount}
         getAmount={getAmount}
       />
-      <ConfirmButton>OK</ConfirmButton>
+      <ConfirmButton onClick={() => { routeMain() }}>OK</ConfirmButton>
     </SuccessWrapper>
   );
 };

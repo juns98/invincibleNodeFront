@@ -10,7 +10,7 @@ const provider = new ethers.providers.JsonRpcProvider(process.env.EVMOS_TESTNET_
 const privateKey = process.env.EVMOS_PRIVATE_KEY;
 const signer = new ethers.Wallet(privateKey, provider);
 
-const contractAddress = "0xAfd3EB58Ea0BD85426dbc2F4457E743420Fa58FA";
+const contractAddress = "0xffC2ccdA7929AC31F605796A3e54AFAd97766eE8";
 const contractABI = liquidStakingJSON.output.abi;
 
 const contractWrite = new ethers.Contract(contractAddress, contractABI, signer);

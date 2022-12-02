@@ -5,12 +5,14 @@ import { Route, BrowserRouter, Routes } from "react-router-dom";
 import MyAsset from "./page/myAsset";
 import StakePage from "./page/stake";
 import styled from "styled-components";
+import UnstakePage from "./page/unstake";
 
 const Background = styled.div`
   background-color: #1e1e1e;
   color: white;
   min-height: 100vh;
 `;
+
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
           <Route path="/" element={<MainPage />}></Route>
           <Route path="/stake" element={<StakePage />}></Route>
           <Route path="/my-asset" element={<MyAsset />}></Route>
+          <Route path="/unstake" element={<UnstakePage />}></Route>
         </Routes>
       </BrowserRouter>
     </Background>

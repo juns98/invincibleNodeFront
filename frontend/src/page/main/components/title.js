@@ -8,6 +8,8 @@ import { Button } from "../../../styles/styledComponents/button";
 import { LightText } from "../../../styles/styledComponents/lightText";
 import { WhiteButton } from "../../../styles/styledComponents/whiteButton";
 
+import Web3 from "web3";
+
 //--------------------Styles--------------------------//
 
 const HeaderWrapper = styled.div`
@@ -62,11 +64,89 @@ const LaunchApp = styled(BlueButton)`
 `;
 //--------------------------------------------------------------//
 
+const web3 = new Web3(window.ethereum);
+
 function Title() {
   let navigate = useNavigate();
   const routeApp = () => {
     let path = `stake`;
     navigate(path);
+  };
+
+  const AddNetwork = async() => {
+    await window.ethereum.request({
+      method: 'wallet_addEthereumChain',
+      params: [{ 
+          chainId: web3.utils.toHex('9000'),
+          chainName: 'Evmos',
+          nativeCurrency: {
+              name: 'tEVMOS',
+              symbol: 'tEVMOS',
+              decimals: 18
+          },
+          rpcUrls: ['https://eth.bd.evmos.dev:8545'],
+          blockExplorerUrls: ['https://evm.evmos.dev']
+      }],
+  })
+  .then(() => console.log('network added'))
+  .catch(() => console.log('could not add network'))
+  }
+
+  const SwitchNetwork = async () => {
+    await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: web3.utils.toHex('9000') }],
+    })
+    .then(() => console.log('network has been set'))
+    .catch((e) => {
+        if (e.code === 4902) {
+          console.log('network is not available, add it');
+          AddNetwork();
+
+        } else {
+          console.log('could not set network')
+        }
+    })
+  }
+
+  const ConnectToMetamask = async () => {
+    let returnValue =false;
+    if (window.ethereum) {
+      await window.ethereum.request({ method: "eth_requestAccounts" });
+      const yourNetworkId = '9000'
+      const netId = await web3.eth.net.getId()
+      .then((networkId) => {
+        if (networkId != yourNetworkId) {
+          // MetaMask network is wrong
+          console.log('current net id: ', networkId);
+          // set network
+          returnValue = false;
+          SwitchNetwork();
+        }
+        else {
+          console.log("proper network. id: ", networkId);
+          const account = web3.eth.accounts;
+          //Get the current MetaMask selected/active wallet
+          const walletAddress = account.givenProvider.selectedAddress;
+          console.log(`Wallet Address: ${walletAddress}`);
+          window.localStorage.setItem("connectMetamask", true);
+          // window.location.reload();
+          returnValue = true;
+        }
+      })
+      .catch((err) => {
+        // unable to retrieve network id
+        console.log(err);
+        returnValue = false;
+      });
+      console.log(returnValue);
+      return returnValue;
+    } 
+
+    else {
+      console.log("No wallet");
+      return false;
+    }
   };
 
   return (
@@ -77,8 +157,14 @@ function Title() {
         <ButtonWrapper>
           <Contact>Contact us</Contact>
           <LaunchApp
-            onClick={() => {
-              routeApp();
+            onClick={async() => {
+              const connection = await ConnectToMetamask();
+              if (connection) {
+                routeApp();
+              }
+              else {
+                alert("Change Network to begin");
+              }
             }}
           >
             Launch App

@@ -12,6 +12,12 @@ contract LiquidStaking is ReentrancyGuard{
         bool isValue; 
     }
 
+    struct UnbondData {
+        address account;
+        uint unbondCompleteTime;
+        uint amount;
+    }
+
     address public owner;
     address public validatorOwner; 
     // address list
@@ -32,6 +38,7 @@ contract LiquidStaking is ReentrancyGuard{
     uint public totalSupply;
     // User address => staked amount -> 각 유저가 스테이킹한 양
     mapping(address => uint) public balanceOf;
+    UnbondData[] public unbondRequests;
 
     event Received(address sender);
     event Transfer(address indexed src, address indexed dst, uint val);
@@ -40,6 +47,7 @@ contract LiquidStaking is ReentrancyGuard{
     // validatorOwner = 0x3abc249dd82Df7eD790509Fba0cC22498C92cCFc
     // rewardToken = 0x89a7D248d7520387963F5d164De9D8a3A77A4200
     // liquidStaking = 0xAd6c553BCe3079b4Dc52689fbfD4a2e72F1F3158
+    // unbondingtime = 604800
 
     // 생성자로 staking token address / reward token address을 입력 
     constructor(address _reToken, address _validatorOwner, uint _unbondingTime) {
@@ -57,6 +65,16 @@ contract LiquidStaking is ReentrancyGuard{
         if (msg.sender == validatorOwner) {
             // (bool sent, ) = validatorOwner.call{value: msg.value}("");
             // require(sent, "Failed to send EVMOS");
+            
+            for (uint i = 0; i < unbondRequests.length; i++) {
+                if (unbondRequests[i].unbondCompleteTime < block.timestamp && msg.value == unbondRequests[i].amount  ) {
+                    address receiver = unbondRequests[i].account;
+                    (bool sent, ) = receiver.call{value: msg.value}("");
+                    require(sent, "Failed to send EVMOS");
+                }
+                popFromUnbondRequest(i);
+            }
+
         }
         // normal user send
         else {
@@ -76,6 +94,10 @@ contract LiquidStaking is ReentrancyGuard{
         _;
     }
 
+    function setUnbondingTime(uint _period) public onlyOwner() {
+        unbondingTime = _period;
+    }
+
     function updateAccountReward (address _account, uint _amount) private {
         uint dailyReward = _amount * balanceOf[msg.sender] / totalSupply;
         rewards[_account] = rewards[_account] + dailyReward;
@@ -89,7 +111,7 @@ contract LiquidStaking is ReentrancyGuard{
         }
     }
 
-    function exists(address _account) public returns(bool) {
+    function exists(address _account) public view returns(bool) {
         for (uint i = 0; i< addressList.length; i++) {
             if (addressList[i] == _account) {
                 return true;
@@ -108,6 +130,7 @@ contract LiquidStaking is ReentrancyGuard{
     function withdraw(uint _amount) external payable nonReentrant()  {
         require(_amount > 0, "amount = 0");
         require(_amount <= userMaximumWithdrawAmount[msg.sender], "too much amount");
+        emit Unbond(msg.sender, _amount);
         balanceOf[msg.sender] -= _amount;
         userMaximumWithdrawAmount[msg.sender] -= _amount;
         if (balanceOf[msg.sender] < 0 ) {
@@ -115,7 +138,8 @@ contract LiquidStaking is ReentrancyGuard{
         }
         totalSupply -= _amount;
         reToken.transferFrom(msg.sender, address(this), _amount);
-
+        UnbondData memory data = UnbondData(msg.sender, block.timestamp+unbondingTime, _amount);
+        unbondRequests.push(data);
 
         // (bool sent, bytes memory data) = recipient.call{value: msg.value}("");
         // require(sent, "Failed to send Ether");
@@ -134,6 +158,15 @@ contract LiquidStaking is ReentrancyGuard{
     function _min(uint x, uint y) private pure returns (uint) {
         return x <= y ? x : y;
     }
+
+    function popFromUnbondRequest(uint index) private {
+        // UnbondData memory element = unbondRequests[index];
+        for (uint i = index; i < unbondRequests.length - 1; i++) {
+            unbondRequests[i] = unbondRequests[i + 1];
+        }
+        delete unbondRequests[unbondRequests.length - 1];
+    }
+    
 }
 
 interface IERC20 {
