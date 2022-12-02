@@ -9,6 +9,7 @@ import address from "../../../addresses/contractAddress.json";
 import liquidStaking from "../../../artifacts/liquidStaking.json";
 import rewardToken from "../../../artifacts/rewardToken.json";
 import { useNavigate } from "react-router-dom";
+import keys from "../../../env.json";
 
 const LeverageWrapper = styled.div`
   margin-top: 5vh;
@@ -136,6 +137,7 @@ const Unstake = ({ token, getAmount }) => {
     const [stakedAmount, setStakedAmount] = useState(); 
     const [ethBalance, setEthBalance] = useState(null);
     const [stageLevel, setStageLevel] = useState(0);
+    const [evmosPrice, setEvmosPrice] = useState(0);
 
     let navigate = useNavigate();
     const routeMain = () => {
@@ -177,9 +179,33 @@ const Unstake = ({ token, getAmount }) => {
         console.log("staked amount: ", gStaked);
     }
 
+    const getEvmosPrice = async() => {
+        const APIKEY = keys.APIKEY;
+        const baseURL = 'https://api.covalenthq.com/v1'
+        const blockchainChainId = '9001'
+        const demoAddress = '0x3abc249dd82Df7eD790509Fba0cC22498C92cCFc'
+        
+        async function getWalletBalance(chainId, address) {
+            const url = new URL(`${baseURL}/${chainId}/address/${address}/balances_v2/?key=${APIKEY}`);
+            const response = await fetch(url);
+            const result = await response.json();
+            const data = result.data;
+            const evmos_price = Math.round(data.items[0].quote_rate*100)/100;
+            console.log(evmos_price)
+            setEvmosPrice(evmos_price);
+            return data;
+        }
+        
+        const data = await getWalletBalance(blockchainChainId, demoAddress);
+        console.log(data);
+    }
+
     useEffect(()=> {
         getTotalStaked();
+        getEvmosPrice();
     }, []);
+
+    
 
     return (
         <LeverageWrapper>
@@ -200,7 +226,7 @@ const Unstake = ({ token, getAmount }) => {
             <StakeStatusWrapper>
                 <StakeStatusText>
                     <YouStaked>You Staked</YouStaked>
-                    <Price>1Evmos ≈ $0.7</Price>
+                    <Price>1Evmos ≈ ${evmosPrice}</Price>
                 </StakeStatusText>
                 <StakeAmountText>
                     {stakedAmount} EVMOS
