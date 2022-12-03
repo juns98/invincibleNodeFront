@@ -57,7 +57,7 @@ const Logo = styled.img`
   margin-top: 50%;
   width: 97px;
 `;
-const MyAssetButton = styled.button`
+const UnstakeButton = styled.button`
   //   grid-column-start: 1;
   //   grid-column-end: 1;
   font-size: 15px;
@@ -71,6 +71,18 @@ const MyAssetButton = styled.button`
   border: hidden;
   background-color: transparent;
   color: #ffffff;
+`;
+const ClaimButton = styled.button` 
+font-size: 15px;
+height: 55px;
+padding-left: 3vw;
+padding-right: 3vw;
+border-radius: 5px;
+font-family: Pretendard;
+font-weight: 700;
+border: hidden;
+background-color: transparent;
+color: #ffffff;
 `;
 const HomeButton = styled.button`
   grid-column-start: 1;
@@ -99,6 +111,10 @@ function Header({ home }) {
     let path = "/";
     navigate(path);
   };
+  const routeClaimReward = () => {
+    let path = "/claim";
+    navigate(path);
+  }
 
   const AddNetwork = async() => {
     await window.ethereum.request({
@@ -164,7 +180,7 @@ function Header({ home }) {
       console.log(`Wallet Address: ${walletAddress}`);
       console.log(dispatch(setStatus(true)));
       window.localStorage.setItem("connectMetamask", true);
-      // window.location.reload();
+      window.location.reload();
       return true;
     } else {
       console.log("No wallet");
@@ -214,13 +230,13 @@ function Header({ home }) {
                 Main
               </HomeButton>
             ) : (
-              <MyAssetButton
+              <UnstakeButton
                 onClick={() => {
                   routeUnstake();
                 }}
               >
-                My Asset
-              </MyAssetButton>
+                Unstake
+              </UnstakeButton>
             )}
             <WalletConnect
               onClick={() => {
@@ -256,13 +272,22 @@ function Header({ home }) {
               Main
             </HomeButton>
           ) : (
-            <MyAssetButton
+            <>
+            <UnstakeButton
+              onClick={() => {
+                routeClaimReward();
+              }}
+            >
+              Claim Reward
+            </UnstakeButton>
+            <UnstakeButton
               onClick={() => {
                 routeUnstake();
               }}
             >
               Unstake
-            </MyAssetButton>
+            </UnstakeButton>
+            </>
           )}
           {window.localStorage.getItem("connectMetamask") ? (
             <WalletAddress>

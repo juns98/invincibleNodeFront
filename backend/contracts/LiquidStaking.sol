@@ -36,8 +36,11 @@ contract LiquidStaking is ReentrancyGuard{
     
     // Total staked -> 총 스테이킹 된 양
     uint public totalSupply;
+    uint public totalUnstaked;
     // User address => staked amount -> 각 유저가 스테이킹한 양
     mapping(address => uint) public balanceOf;
+    mapping(address => uint) public staked;
+    mapping(address => uint) public unstaked;
     UnbondData[] public unbondRequests;
 
     event Received(address sender);
@@ -49,6 +52,28 @@ contract LiquidStaking is ReentrancyGuard{
     // liquidStaking = 0xAd6c553BCe3079b4Dc52689fbfD4a2e72F1F3158
     // unbondingtime = 604800
 
+     function withdraw(uint _amount) public nonReentrant() {
+        require(_amount > 0, "amount = 0");
+        require(_amount + unstaked[msg.sender] < userMaximumWithdrawAmount[msg.sender], "too much amount");
+        // require(_amount <= userMaximumWithdrawAmount[msg.sender], "too much amount");
+        emit Unbond(msg.sender, _amount);
+        
+        unstaked[msg.sender] += _amount;
+        totalUnstaked += _amount;
+        // balanceOf[msg.sender] -= _amount;
+        // userMaximumWithdrawAmount[msg.sender] -= _amount;
+        // totalSupply -= _amount;
+        reToken.transferFrom(msg.sender, address(this), _amount);
+        UnbondData memory data = UnbondData(msg.sender, block.timestamp+unbondingTime, _amount);
+        unbondRequests.push(data);
+    }
+
+    // function updateValues(uint _amount) public {
+    //     balanceOf[msg.sender] -= _amount;
+    //     userMaximumWithdrawAmount[msg.sender] -= _amount;
+    //     totalSupply -= _amount;
+    // }
+
     // 생성자로 staking token address / reward token address을 입력 
     constructor(address _reToken, address _validatorOwner, uint _unbondingTime) {
         owner = msg.sender;
@@ -56,6 +81,9 @@ contract LiquidStaking is ReentrancyGuard{
         reToken = IERC20(_reToken);
         totalAddressNumber = 0;
         unbondingTime = _unbondingTime;
+
+        //for test
+        userMaximumWithdrawAmount[msg.sender] = 1000000000000000;
     }
 
     fallback() external payable {
@@ -99,7 +127,7 @@ contract LiquidStaking is ReentrancyGuard{
     }
 
     function updateAccountReward (address _account, uint _amount) private {
-        uint dailyReward = _amount * balanceOf[msg.sender] / totalSupply;
+        uint dailyReward = _amount * balanceOf[msg.sender] / totalSupply - _amount * balanceOf[msg.sender] / totalUnstaked ;
         rewards[_account] = rewards[_account] + dailyReward;
         // user가 withdraw 할 수 있는 금액 증가
         userMaximumWithdrawAmount[_account] += dailyReward;
@@ -125,24 +153,6 @@ contract LiquidStaking is ReentrancyGuard{
             addressList.push(_account);
             totalAddressNumber++;
         }
-    }
-
-    function withdraw(uint _amount) external payable nonReentrant()  {
-        require(_amount > 0, "amount = 0");
-        require(_amount <= userMaximumWithdrawAmount[msg.sender], "too much amount");
-        emit Unbond(msg.sender, _amount);
-        balanceOf[msg.sender] -= _amount;
-        userMaximumWithdrawAmount[msg.sender] -= _amount;
-        if (balanceOf[msg.sender] < 0 ) {
-            balanceOf[msg.sender] = 0;
-        }
-        totalSupply -= _amount;
-        reToken.transferFrom(msg.sender, address(this), _amount);
-        UnbondData memory data = UnbondData(msg.sender, block.timestamp+unbondingTime, _amount);
-        unbondRequests.push(data);
-
-        // (bool sent, bytes memory data) = recipient.call{value: msg.value}("");
-        // require(sent, "Failed to send Ether");
     }
 
     function receiveReward() external nonReentrant()  {

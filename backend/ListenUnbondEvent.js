@@ -6,6 +6,7 @@ const { web3 } = require("web3");
 
 
 const  liquidStakingJSON  = require("./artifacts/LiquidStaking_metadata.json");
+const addresses = require("./addresses/contractAddress.json");
 const pw = process.env.PASSPHRASE;
 
 // const web3 = new Web3(window.ethereum);
@@ -14,7 +15,7 @@ const privateKey = process.env.EVMOS_PRIVATE_KEY;
 const signer = new ethers.Wallet(privateKey, provider);
 const validator = process.env.VALIDATOR;
 
-const contractAddress = "0xffC2ccdA7929AC31F605796A3e54AFAd97766eE8";
+const contractAddress = addresses.liquidStaking;
 const contractABI = liquidStakingJSON.output.abi;
 
 const contractWrite = new ethers.Contract(contractAddress, contractABI, signer);

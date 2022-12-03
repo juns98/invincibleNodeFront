@@ -27,24 +27,6 @@ const SecondText = styled(LightText)`
   font-weight: 400;
   margin-bottom: 22px;
 `;
-const WarningWrapper = styled.div` 
-    background-color: #2E1E1D;
-    border-radius: 10px;
-    margin-bottom: 10px;
-`;
-const WarningText1 = styled(BoldText)` 
-    margin-left: 2vw;
-    padding-top: 2vh;
-    margin-right: 10vw;
-    margin-bottom: 10px;
-    font-size: 20px;
-`;
-const WarningText2 = styled(LightText)` 
-    margin-left: 2vw;
-    color: #EF8C8A;
-    font-size: 15px;
-    padding-bottom: 2vh;
-`;
 const StakeStatusWrapper = styled.div` 
     background-color: #292929;
     margin-bottom: 10px;
@@ -58,68 +40,23 @@ const StakeStatusText = styled.div`
     justify-content: space-between;
 `;
 const YouStaked = styled(BoldText)` 
-
+padding-right: 5vw;
+padding-bottom: 1vh;
 `;
 const Price = styled(LightText)` 
 margin-right: 2vw;
+padding-top: 0.5vh;
+font-size: 1vh;
 `;
 const StakeAmountText = styled(LightText)` 
 text-align:center;
 padding-bottom: 2vh;
 `; 
-const UndelegateAmountWrapper = styled.div` 
-    background-color: #292929;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    padding-bottom: 2vh;
-`;
-const AmountUndelegate = styled(BoldText)` 
-margin-left: 2vw;
-padding-top: 2vh;
-`;
+
 const UndelegateButton = styled(Button)` 
     width: 100%;
 `;
-const AmountToStake = styled(BasicInput)`
-  width: 100%;
-  height: 100%;
-  border: hidden;
-  text-align: right;
-  font-family: Pretendard;
-  font-size: 19px;
-  font-weight: 500;
-  min-width: 30px;
-  &:focus {
-    outline: none;
-  }
-  background-color: #292929;
-  color: white;
-`;
-const AmountBox = styled.div`
-  margin-right: 2vw;
-  margin-left: 2vw;
-  height: 62px;
-  display: flex;
-  align-items: center;
-  padding-left: 30px;
-  padding-right: 30px;
-  border: 2px solid #333333;
-  border-radius: 10px;
-  margin-top: 14px;
-`;
 
-const MaxButton = styled(Button)`
-  padding-left: 1vw;
-  padding-right: 1vw;
-  width: auto;
-  height: 35px;
-`;
-
-const CurrencyBox = styled.div`
-  font-family: Pretendard;
-  font-size: 19px;
-  font-weight: 500;
-`;
 
 
 const web3 = new Web3(window.ethereum);
@@ -128,13 +65,12 @@ const liquidStakingContract = new web3.eth.Contract(liquidStaking.output.abi, li
 const rewardTokenAddress = address.rewardToken;
 const rewardTokenContract = new web3.eth.Contract(rewardToken.output.abi, rewardTokenAddress);
 
-const Unstake = ({ token, getAmount }) => {
+const ClaimReward = ({ token, getAmount }) => {
     const [leveraged, setLeveraged] = useState(true);
     const [leverage, setLeverage] = useState(2);
     const [pressStake, setPressStake] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
-    const [stakeAmount, setStakeAmount] = useState();
-    const [stakedAmount, setStakedAmount] = useState(); 
+    const [rewardAmount, setRewardAmount] = useState(); 
     const [ethBalance, setEthBalance] = useState(null);
     const [stageLevel, setStageLevel] = useState(0);
     const [evmosPrice, setEvmosPrice] = useState(0);
@@ -145,39 +81,34 @@ const Unstake = ({ token, getAmount }) => {
         navigate(path);
     };
 
-    const unstake = () => {
-        const doUnstake = async(amount) => {
+    const claimRewards = () => {
+        const doClaim = async() => {
             const getAccount = await web3.eth.getAccounts();
             const account = getAccount[0];
             console.log("account: ", account); 
-            const realAmount = amount * (web3.utils.toBN(10 ** 18));
-            console.log("ra ", realAmount)
-            const approve = await rewardTokenContract.methods.approve(liquidStakingAddress, realAmount).send({from: account})
+    
+            const receiveReward = await liquidStakingContract.methods.receiveReward().send({from: account})
             .then(function(receipt) {
                 console.log(receipt);
-            });
-            const unstake = await liquidStakingContract.methods.withdraw(realAmount).send({from: account})
-            .then(function(receipt) {
-                console.log(receipt);
-                alert("Unstake Request submitted");
+                alert("Successfully Claimed rewards");
                 routeMain();
             })
         }
-        doUnstake(stakeAmount);
+        if (rewardAmount == 0) {
+            alert("No reward to claim!");
+            routeMain();
+        }
+        else {
+            doClaim();
+        }
     };
-    const maxOnClick = () => {
-        setStakeAmount(stakedAmount ? stakedAmount  : 0);
-    };
-    const handleStakeAmountChange = (event) => {
-        setStakeAmount(event.target.value);
-    };
-    const getTotalStaked = async () => {
+    
+    const getReward = async () => {
         const getAccount = await web3.eth.getAccounts();
         const account = getAccount[0];
-        const gStaked = await liquidStakingContract.methods.balanceOf(account).call();
-        const gSpent = await liquidStakingContract.methods.unstaked(account).call();
-        setStakedAmount( (gStaked-gSpent) / 10**18);
-        console.log("staked amount: ", gStaked);
+        const gReward = await liquidStakingContract.methods.rewards(account).call();
+        setRewardAmount( gReward / 10**18);
+        // console.log("staked amount: ", gStaked);
     }
 
     const getEvmosPrice = async() => {
@@ -202,7 +133,7 @@ const Unstake = ({ token, getAmount }) => {
     }
 
     useEffect(()=> {
-        getTotalStaked();
+        getReward();
         getEvmosPrice();
     }, []);
 
@@ -210,51 +141,28 @@ const Unstake = ({ token, getAmount }) => {
 
     return (
         <LeverageWrapper>
-            <FirstText>Unstake</FirstText>
+            <FirstText>Claim Reward</FirstText>
             <SecondText>
-                Please prepare inEVMOS ahead of time for making transaction smooth 
+                Rewards are updated once per day
             </SecondText>
-            <WarningWrapper>
-                <WarningText1>
-                    Once the undelegation period begins you will : 
-                </WarningText1>
-                <WarningText2>
-                ① Not receive staking rewards <br />
-                ② Not be able to cancel the unbonding <br />
-                ③ Need to wait 7days for the amount to be withdraw
-                </WarningText2>
-            </WarningWrapper>
             <StakeStatusWrapper>
                 <StakeStatusText>
-                    <YouStaked>You Staked</YouStaked>
+                    <YouStaked>Claimable</YouStaked>
                     <Price>1Evmos ≈ ${evmosPrice}</Price>
                 </StakeStatusText>
                 <StakeAmountText>
-                    {stakedAmount} EVMOS
+                    {rewardAmount} EVMOS
                 </StakeAmountText>
             </StakeStatusWrapper>
-            <UndelegateAmountWrapper>
-                <AmountUndelegate>Amount to Undelegate</AmountUndelegate>
-                <AmountBox>
-                    <MaxButton onClick={maxOnClick}>MAX</MaxButton>
-                    <AmountToStake
-                    placeholder="0.0"
-                    type="text"
-                    value={stakeAmount}
-                    onChange={handleStakeAmountChange}
-                    ></AmountToStake>
-                    <CurrencyBox>Evmos</CurrencyBox>
-                </AmountBox>
-            </UndelegateAmountWrapper>
             <UndelegateButton 
             onClick={() => {
-                unstake();
+                claimRewards();
             }}
             >
-                UnStake
+                Claim Rewards
             </UndelegateButton>
         </LeverageWrapper>
     );
 };
 
-export default Unstake;
+export default ClaimReward;

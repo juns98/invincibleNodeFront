@@ -5,12 +5,13 @@ const { web3 } = require("web3");
 const  liquidStakingJSON  = require("./artifacts/LiquidStaking_metadata.json");
 const pw = process.env.PASSPHRASE;
 const cron = require('node-cron');
+const addresses = require("./addresses/contractAddress.json");
 
 const provider = new ethers.providers.JsonRpcProvider(process.env.EVMOS_TESTNET_RPC_URL);
 const privateKey = process.env.EVMOS_PRIVATE_KEY;
 const signer = new ethers.Wallet(privateKey, provider);
 
-const contractAddress = "0xffC2ccdA7929AC31F605796A3e54AFAd97766eE8";
+const contractAddress = addresses.liquidStaking;
 const contractABI = liquidStakingJSON.output.abi;
 
 const contractWrite = new ethers.Contract(contractAddress, contractABI, signer);
@@ -19,8 +20,8 @@ const contractRead = new ethers.Contract(contractAddress, contractABI, provider)
 
 console.log("-------------Claim Reward Once per day--------------");
 
-cron.schedule('* * * * *', function () {
-    console.log('매 분마다 작업 실행');
+cron.schedule('* 0 * * *', function () {
+    console.log('update once per day');
     exec("bash ClaimReward.sh " + pw, (error, stdout, stderr) => {
         if (error) {
             console.log(`error: ${error.message}`);
