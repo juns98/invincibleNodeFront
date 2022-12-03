@@ -20,7 +20,7 @@ const contractRead = new ethers.Contract(contractAddress, contractABI, provider)
 
 console.log("-------------Claim Reward Once per day--------------");
 
-cron.schedule('* 0 * * *', function () {
+cron.schedule('0 * * * *', function () {
     console.log('update once per day');
     exec("bash ClaimReward.sh " + pw, (error, stdout, stderr) => {
         if (error) {

@@ -56,7 +56,12 @@ padding-bottom: 2vh;
 const UndelegateButton = styled(Button)` 
     width: 100%;
 `;
+const TransactionTable = styled.table` 
 
+`;
+const TableHeader = styled.th` 
+
+`;
 
 
 const web3 = new Web3(window.ethereum);
@@ -65,15 +70,11 @@ const liquidStakingContract = new web3.eth.Contract(liquidStaking.output.abi, li
 const rewardTokenAddress = address.rewardToken;
 const rewardTokenContract = new web3.eth.Contract(rewardToken.output.abi, rewardTokenAddress);
 
-const ClaimReward = ({ token, getAmount }) => {
-    const [leveraged, setLeveraged] = useState(true);
-    const [leverage, setLeverage] = useState(2);
-    const [pressStake, setPressStake] = useState(false);
-    const [selectedOption, setSelectedOption] = useState(null);
+const Transaction = ({ token, getAmount }) => {
     const [rewardAmount, setRewardAmount] = useState(); 
-    const [ethBalance, setEthBalance] = useState(null);
-    const [stageLevel, setStageLevel] = useState(0);
-    const [evmosPrice, setEvmosPrice] = useState(0);
+    const [account, setAccount] = useState();
+    const [transactions, setTransactions] = useState();
+
 
     let navigate = useNavigate();
     const routeMain = () => {
@@ -81,86 +82,77 @@ const ClaimReward = ({ token, getAmount }) => {
         navigate(path);
     };
 
-    const claimRewards = () => {
-        const doClaim = async() => {
-            const getAccount = await web3.eth.getAccounts();
-            const account = getAccount[0];
-            console.log("account: ", account); 
-    
-            const receiveReward = await liquidStakingContract.methods.receiveReward().send({from: account})
-            .then(function(receipt) {
-                console.log(receipt);
-                alert("Successfully Claimed rewards");
-                routeMain();
-            })
-        }
-        if (rewardAmount == 0) {
-            alert("No reward to claim!");
-            routeMain();
-        }
-        else {
-            doClaim();
-        }
-    };
-    
-    const getReward = async () => {
+    const getTransactions = async() => {
         const getAccount = await web3.eth.getAccounts();
         const account = getAccount[0];
-        const gReward = await liquidStakingContract.methods.rewards(account).call();
-        setRewardAmount( gReward / 10**18);
-        // console.log("staked amount: ", gStaked);
-    }
-
-    const getEvmosPrice = async() => {
+        setAccount(account);
         const APIKEY = keys.APIKEY;
         const baseURL = 'https://api.covalenthq.com/v1'
         const blockchainChainId = '9001'
-        const demoAddress = '0x3abc249dd82Df7eD790509Fba0cC22498C92cCFc'
+        const demoAddress = account;
         
-        async function getWalletBalance(chainId, address) {
-            const url = new URL(`${baseURL}/${chainId}/address/${address}/balances_v2/?key=${APIKEY}`);
+        async function getTransactions(chainId, address) {
+            const url = new URL(`${baseURL}/${chainId}/address/${address}/transactions_v2/?key=${APIKEY}`);
             const response = await fetch(url);
             const result = await response.json();
             const data = result.data;
-            const evmos_price = Math.round(data.items[0].quote_rate*100)/100;
-            console.log(evmos_price)
-            setEvmosPrice(evmos_price);
+            console.log(data);
             return data;
         }
         
-        const data = await getWalletBalance(blockchainChainId, demoAddress);
+        const data = await getTransactions(blockchainChainId, demoAddress);
         console.log(data);
+        setTransactions(data);
     }
+
+  
+
     useEffect(()=> {
-        getReward();
-        getEvmosPrice();
+        getTransactions();
     }, []);
+    
+    if (transactions == null) {
+        return (
+            <LeverageWrapper>
+                <FirstText>Transactions</FirstText>
+                <SecondText>
+                    Address: {account}
+                </SecondText>
+                <StakeStatusWrapper>
+                    <StakeStatusText>
+                        <YouStaked>Claimable</YouStaked>
+                    </StakeStatusText>
+                    <StakeAmountText>
+                        transactions uploading ...
+                    </StakeAmountText>
+                </StakeStatusWrapper>
+            </LeverageWrapper>
+        )
+    }
 
 
     return (
         <LeverageWrapper>
-            <FirstText>Claim Reward</FirstText>
+            <FirstText>Transactions</FirstText>
             <SecondText>
-                Rewards are updated once per day
+                Address: {account}
             </SecondText>
             <StakeStatusWrapper>
-                <StakeStatusText>
-                    <YouStaked>Claimable</YouStaked>
-                    <Price>1Evmos ≈ ${evmosPrice}</Price>
-                </StakeStatusText>
-                <StakeAmountText>
-                    {rewardAmount} EVMOS
-                </StakeAmountText>
+                <TransactionTable>
+                    {/* {transactions.items.map(event => (
+                        <tr>
+                            <td>{event.block_height}</td>
+                        </tr>
+                    ))} */}
+                    {transactions.items[0].block_height}
+                </TransactionTable>
+
+                
+                {transactions}
+              
             </StakeStatusWrapper>
-            <UndelegateButton 
-            onClick={() => {
-                claimRewards();
-            }}
-            >
-                Claim Rewards
-            </UndelegateButton>
         </LeverageWrapper>
     );
 };
 
-export default ClaimReward;
+export default Transaction;

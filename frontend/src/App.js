@@ -7,6 +7,8 @@ import StakePage from "./page/stake";
 import styled from "styled-components";
 import UnstakePage from "./page/unstake";
 import ClaimRewardPage from "./page/claimReward";
+import TransactionPage from "./page/transactions";
+
 
 
 const Background = styled.div`
@@ -26,6 +28,7 @@ function App() {
           <Route path="/my-asset" element={<MyAsset />}></Route>
           <Route path="/unstake" element={<UnstakePage />}></Route>
           <Route path="/claim" element={<ClaimRewardPage />}></Route>
+          <Route path="/transactions" element={ <TransactionPage /> }></Route>
         </Routes>
       </BrowserRouter>
     </Background>

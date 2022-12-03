@@ -115,6 +115,10 @@ function Header({ home }) {
     let path = "/claim";
     navigate(path);
   }
+  const routeTransaction = () => {
+    let path = "/transactions";
+    navigate(path);
+  }
 
   const AddNetwork = async() => {
     await window.ethereum.request({
@@ -230,13 +234,7 @@ function Header({ home }) {
                 Main
               </HomeButton>
             ) : (
-              <UnstakeButton
-                onClick={() => {
-                  routeUnstake();
-                }}
-              >
-                Unstake
-              </UnstakeButton>
+              <></>
             )}
             <WalletConnect
               onClick={() => {
@@ -286,6 +284,13 @@ function Header({ home }) {
               }}
             >
               Unstake
+            </UnstakeButton>
+            <UnstakeButton
+              onClick={() => {
+                routeTransaction();
+              }}
+            >
+              Transactions
             </UnstakeButton>
             </>
           )}
