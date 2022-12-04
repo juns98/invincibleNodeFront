@@ -105,6 +105,7 @@ const Transaction = ({ token, getAmount }) => {
         setTransactions(data);
     }
 
+    
   
 
     useEffect(()=> {
@@ -120,10 +121,10 @@ const Transaction = ({ token, getAmount }) => {
                 </SecondText>
                 <StakeStatusWrapper>
                     <StakeStatusText>
-                        <YouStaked>Claimable</YouStaked>
+                        <YouStaked>TXhash</YouStaked>
                     </StakeStatusText>
                     <StakeAmountText>
-                        transactions uploading ...
+                        txhash uploading ...
                     </StakeAmountText>
                 </StakeStatusWrapper>
             </LeverageWrapper>
@@ -138,18 +139,15 @@ const Transaction = ({ token, getAmount }) => {
                 Address: {account}
             </SecondText>
             <StakeStatusWrapper>
-                <TransactionTable>
-                    {/* {transactions.items.map(event => (
-                        <tr>
-                            <td>{event.block_height}</td>
-                        </tr>
-                    ))} */}
-                    {transactions.items[0].block_height}
-                </TransactionTable>
-
                 
-                {transactions}
-              
+                        <YouStaked>TXhash</YouStaked>
+               
+                <TransactionTable>
+                    {transactions.items.map(item =>{
+                        return <div>{item.tx_hash}</div>
+                    })}
+                    
+                </TransactionTable>
             </StakeStatusWrapper>
         </LeverageWrapper>
     );
