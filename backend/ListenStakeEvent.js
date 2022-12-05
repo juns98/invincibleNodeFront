@@ -48,6 +48,34 @@ contractRead.on("Transfer", (src, dst, val, event) => {
 });
 
 
+
+// const txhash = fetchTxhash(stdout);
+// console.log(txhash);
+// setTimeout(() => {
+//     exec("evmosd query tx --type=hash " + txhash + " --output json", (error, stdout, stderr) => {
+//         if (error) {
+//             console.log(`error: ${error.message}`);
+//             return;
+//         }
+//         if (stderr) {
+//             console.log(`stderr: ${stderr}`);
+//             return;
+//         }
+//         const obj = JSON.parse(stdout);
+//         console.log(obj);
+//     });
+// }, 10000);
+// function fetchTxhash(input) {
+//     let lines = input.split("\n");
+//     for (let i = 0; i < lines.length; i++) {
+//         if (lines[i].includes("txhash")) {
+//             const result = lines[i].split(" ");
+//             return result[1];
+//         }
+//     }
+// }
+
+
 // web3.eth.sendTransaction({
 //     from: account,
 //     to: liquidStakingContractAddress,
