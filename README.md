@@ -16,7 +16,7 @@ Mintscan: https://testnet.mintscan.io/evmos-testnet/validators/evmosvaloper12756
 
 
 # Frontend
-npm i
+npm i                                                                                                 
 npm start
 
 # Backend
