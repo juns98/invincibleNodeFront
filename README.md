@@ -2,7 +2,7 @@
 ![image](https://user-images.githubusercontent.com/64398993/205530463-9701ae19-bb41-4b75-be26-2d99cdd05860.png)
 
 # Control Flow
-![image](https://user-images.githubusercontent.com/64398993/205534196-a0f54b49-816b-4a49-b618-0592a424712c.png)
+![image](https://user-images.githubusercontent.com/64398993/205534264-2606f0e9-9c6e-476b-8d1e-69450c9ce526.png)
 
 # Frontend
 npm i
